@@ -1,10 +1,21 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./App.{js,ts,tsx}', './components/**/*.{js,ts,tsx}'],
+  content: ['./src/App.{js,ts,tsx}', './src/components/**/*.{js,ts,tsx}', './src/app/index.tsx'],
 
+  // extend allows you to add more properties to tailwind classes (e.g. text-green-700 --> text-txt)
   presets: [require('nativewind/preset')],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        btnprimary: '#339933',
+        btnsecondary: '#FF6633',
+        accent: '#FFCC00',
+        background: '#1C0F04',
+        primary: '#FFF',
+        secondary: '#7D4318',
+        outline: '#9F9898',
+      },
+    },
   },
   plugins: [],
 };

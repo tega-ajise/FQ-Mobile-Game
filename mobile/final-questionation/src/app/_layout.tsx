@@ -1,4 +1,7 @@
-import { Stack } from 'expo-router';
+import { useFonts } from '@expo-google-fonts/luckiest-guy';
+import { LuckiestGuy_400Regular } from '@expo-google-fonts/luckiest-guy';
+import { SplashScreen, Stack } from 'expo-router';
+import '../../global.css';
 
 /** NAVIGATION CONCEPTS:
  * Recall - a (tabgroup) name does NOT get included in the route of a screen – does not impact the route
@@ -13,6 +16,14 @@ import { Stack } from 'expo-router';
   });
  */
 export default function RootLayout() {
+  const [fontLoaded] = useFonts({
+    LuckiestGuy_400Regular,
+  });
+
+  if (!fontLoaded) return null;
+
+  SplashScreen.hideAsync();
+
   return (
     <Stack>
       {/** once the user clicks "start game", they should not be able to navigate back (pop the screen off the stack) */}
