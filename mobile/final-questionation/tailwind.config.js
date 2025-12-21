@@ -1,6 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./src/App.{js,ts,tsx}', './src/components/**/*.{js,ts,tsx}', './src/app/index.tsx'],
+  content: [
+    './src/App.{js,ts,tsx}',
+    './src/components/**/*.{js,ts,tsx}',
+    'src/app/**/*.{js,jsx,ts,tsx}',
+  ],
 
   // extend allows you to add more properties to tailwind classes (e.g. text-green-700 --> text-txt)
   presets: [require('nativewind/preset')],

@@ -7,7 +7,7 @@ import { Feather, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icon
 
 export default function App() {
   return (
-    <View className="bg-background flex-1">
+    <View className="flex-1 bg-background">
       <View className="relative">
         <Image
           source={require('../../assets/fq_logo.png')}
@@ -16,11 +16,11 @@ export default function App() {
             width: 386,
           }}
         />
-        <AppText className="absolute top-1/3 m-auto text-center text-6xl text-white">
+        <AppText className="absolute top-1/3 m-auto text-center text-6xl text-primary">
           Final Questionation
         </AppText>
       </View>
-      <View className="mt-12 flex-col gap-8">
+      <View className="mt-20 flex-col gap-8">
         <ThemedNavigateButton
           route="/setup"
           text="New Game"

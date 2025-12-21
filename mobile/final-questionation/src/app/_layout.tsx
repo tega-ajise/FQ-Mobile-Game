@@ -2,6 +2,8 @@ import { useFonts } from '@expo-google-fonts/luckiest-guy';
 import { LuckiestGuy_400Regular } from '@expo-google-fonts/luckiest-guy';
 import { SplashScreen, Stack } from 'expo-router';
 import '../../global.css';
+import SafeScreen from '@/components/SafeScreen';
+import GameProvider from '@/hooks/GameProvider';
 
 /** NAVIGATION CONCEPTS:
  * Recall - a (tabgroup) name does NOT get included in the route of a screen – does not impact the route
@@ -25,13 +27,23 @@ export default function RootLayout() {
   SplashScreen.hideAsync();
 
   return (
-    <Stack>
-      {/** once the user clicks "start game", they should not be able to navigate back (pop the screen off the stack) */}
-      {/** the gameplay navigator should "override" the root navigator – current solution, if there's a better one use that */}
-      <Stack.Screen
-        name="[gameplay]"
-        options={{ headerBackVisible: false, gestureEnabled: false }}
-      />
-    </Stack>
+    <GameProvider>
+      <SafeScreen>
+        <Stack
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: '#1C0F04',
+            },
+          }}>
+          {/** once the user clicks "start game", they should not be able to navigate back (pop the screen off the stack) */}
+          {/** the gameplay navigator should "override" the root navigator – current solution, if there's a better one use that */}
+          <Stack.Screen
+            name="[gameplay]"
+            options={{ headerBackVisible: false, gestureEnabled: false }}
+          />
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+        </Stack>
+      </SafeScreen>
+    </GameProvider>
   );
 }
