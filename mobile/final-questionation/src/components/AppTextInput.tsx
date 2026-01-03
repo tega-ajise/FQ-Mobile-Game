@@ -5,11 +5,13 @@ const AppTextInput = ({
   prefixIcon,
   classes,
   textClasses,
+  ref,
   ...textProps
 }: {
   prefixIcon?: () => React.ReactNode;
   classes: string;
   textClasses?: string;
+  ref?: React.RefAttributes<TextInput>['ref'];
 } & TextInputProps) => {
   return (
     <View className={`flex-row rounded-[10px] border-[3px] border-outline ${classes}`}>
@@ -19,7 +21,8 @@ const AppTextInput = ({
         </View>
       )}
       <TextInput
-        className={`flex-1 bg-black p-4 font-bold text-primary ${prefixIcon ? 'rounded-e-[7px]' : 'rounded-[7px]'} ${textClasses || 'text-3xl'}`}
+        ref={ref}
+        className={`flex-1 bg-black p-4 font-bold text-primary ${prefixIcon ? 'rounded-e-[7px]' : 'rounded-[7px]'} ${textClasses || 'text-3xl'} focus:cursor-text`}
         {...textProps}
       />
     </View>

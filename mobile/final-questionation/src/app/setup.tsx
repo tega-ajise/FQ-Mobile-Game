@@ -74,6 +74,7 @@ const Setup = () => {
         icon={() => <Feather name="play" size={24} color="white" />}
         route={{ pathname: '/[gameplay]', params: { gameplay: globalGameConfig?.lobbyName ?? '' } }}
         style="primary"
+        disabled={!globalGameConfig.lobbyName || !playerRole}
       />
     </View>
   );
