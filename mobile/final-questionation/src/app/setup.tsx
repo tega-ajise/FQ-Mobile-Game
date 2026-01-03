@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import Slider from '@react-native-community/slider';
 import ThemedNavigateButton from '@/components/ThemedNavigateButton';
 import { Feather } from '@expo/vector-icons';
@@ -9,7 +9,10 @@ import { useGameContext } from '@/hooks/GameProvider';
 import AppTextInput from '@/components/AppTextInput';
 
 const Setup = () => {
-  const { playerRole, setPlayerRole, updateGameConfig, globalGameConfig } = useGameContext();
+  const { playerRole, updateGameConfig, globalGameConfig, setSetupCounts, setupCounts } =
+    useGameContext();
+  // just for the visual change
+  const [selectedRole, setSelectedRole] = useState<string>(playerRole.current ?? 'navigator');
 
   return (
     <View className="flex-1 bg-background">
@@ -30,8 +33,10 @@ const Setup = () => {
           maximumTrackTintColor="#44240C"
           step={1}
           renderStepNumber
-          value={globalGameConfig?.roundQuestions?.length}
-          onValueChange={(value) => updateGameConfig({ roundQuestions: new Array(value) })}
+          value={setupCounts.numberOfQuestions}
+          onValueChange={(value) =>
+            setSetupCounts((prev) => ({ ...prev, numberOfQuestions: value }))
+          }
         />
       </View>
       <View className="m-auto">
@@ -44,8 +49,10 @@ const Setup = () => {
           maximumTrackTintColor="#44240C"
           step={1}
           renderStepNumber
-          value={globalGameConfig?.candidates?.length}
-          onValueChange={(value) => updateGameConfig({ candidates: new Array(value) })}
+          value={setupCounts.numberOfCandidates}
+          onValueChange={(value) =>
+            setSetupCounts((prev) => ({ ...prev, numberOfCandidates: value }))
+          }
         />
       </View>
       <View>
@@ -55,8 +62,11 @@ const Setup = () => {
             { label: 'Navigator', value: 'navigator' },
             { label: 'Curator', value: 'curator' },
           ]}
-          onChange={(value) => setPlayerRole(value)}
-          checkedValue={playerRole}
+          onChange={(value) => {
+            setSelectedRole(value);
+            playerRole.current = value;
+          }}
+          checkedValue={selectedRole}
         />
       </View>
       <ThemedNavigateButton

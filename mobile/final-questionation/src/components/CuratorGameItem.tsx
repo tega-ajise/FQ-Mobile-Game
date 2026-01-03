@@ -4,13 +4,16 @@ import { bgMapping } from '@/consts/theme';
 import AppText from './AppText';
 import AppTextInput from './AppTextInput';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useGameContext } from '@/hooks/GameProvider';
 
 interface ListItmProps {
-  currentRound?: number;
+  currentRound: number;
   isSetup?: boolean;
 }
 
 const CuratorGameItem = ({ currentRound, isSetup }: ListItmProps) => {
+  const { globalGameConfig } = useGameContext();
+
   return (
     <View className="my-2">
       <View className="flex flex-row justify-center gap-6">
@@ -18,6 +21,8 @@ const CuratorGameItem = ({ currentRound, isSetup }: ListItmProps) => {
           <AppTextInput
             prefixIcon={() => <FontAwesome5 name="question" color="white" />}
             classes="w-[258px] h-[42px]"
+            textClasses="text-md"
+            value={globalGameConfig?.roundQuestions?.[currentRound]}
           />
           <AppText className="text-[14px] text-secondary">Round {currentRound}</AppText>
         </View>

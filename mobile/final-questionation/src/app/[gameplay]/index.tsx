@@ -17,7 +17,7 @@ const TEST_STEPS = [
 
 const RoundOne = () => {
   const router = useRouter();
-  const { handleViewChange, globalGameConfig } = useGameContext();
+  const { handleViewChange, globalGameConfig, setupCounts, updateGameConfig } = useGameContext();
   const [stepIdx, setStepIdx] = useState(0);
 
   const changeStep = () => {
@@ -30,27 +30,39 @@ const RoundOne = () => {
     });
   };
 
+  const [stagedListItem, setStagedListItem] = useState<string>('');
+
   return (
-    <ScrollView className="flex-1 bg-background p-2">
+    <ScrollView className="flex-1 flex-col bg-background p-2">
       <Step step="Choose question" currentStep={TEST_STEPS[stepIdx]} changeStep={changeStep}>
         <>
           <View className="relative mr-16 flex flex-col items-end gap-2">
             <AppTextInput
+              onChangeText={(txt) => setStagedListItem(txt)}
+              value={stagedListItem}
               prefixIcon={() => <FontAwesome5 name="question" size={24} color="white" />}
               classes="w-[310px] h-[81px]"
             />
-            <AppText className="text-2xl text-secondary">Round 1/5</AppText>
+            <AppText className="text-2xl text-secondary">{`Round ${globalGameConfig.roundQuestions?.length ?? 0}/${setupCounts.numberOfQuestions}`}</AppText>
             <View className="absolute -right-[55px] top-[17%]">
               <Pressable
-                className={`h-[40px] w-[40px] rounded-full ${bgMapping.primary} active:shadow-none`}>
+                className={`h-[40px] w-[40px] rounded-full ${bgMapping.primary} active:shadow-none`}
+                onPress={() => {
+                  const currentQuestions = globalGameConfig.roundQuestions ?? [];
+                  const newQuestions = [...currentQuestions, stagedListItem];
+                  updateGameConfig({ roundQuestions: newQuestions });
+                  setStagedListItem('');
+                }}>
                 <Feather name="check" size={24} color="white" style={{ margin: 'auto' }} />
               </Pressable>
             </View>
           </View>
           <View className="my-4 w-full border-t border-primary" />
-          {globalGameConfig?.roundQuestions?.map((_, idx) => (
-            <SetupListItems key={idx} currentStep={stepIdx} currentRound={idx} />
-          ))}
+          <View className="grow-10">
+            {(globalGameConfig.roundQuestions ?? []).map((_, idx) => (
+              <SetupListItems key={idx} currentStep={stepIdx} currentRound={idx} />
+            ))}
+          </View>
         </>
       </Step>
 
@@ -85,7 +97,7 @@ const SetupListItems = ({
             prefixIcon={() => <FontAwesome5 name="question" size={24} color="white" />}
             classes="w-[310px] h-[81px]"
           />
-          <AppText className="text-2xl text-secondary">Round 1/5</AppText>
+          <AppText className="text-2xl text-secondary">{`Round 1/5`}</AppText>
           <View className="absolute -right-[55px] top-[17%]">
             <Pressable
               className={`h-[40px] w-[40px] rounded-full ${bgMapping.primary} active:shadow-none`}>

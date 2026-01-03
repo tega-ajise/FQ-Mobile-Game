@@ -3,7 +3,6 @@ import React from 'react';
 import { HrefObject, Link } from 'expo-router';
 import AppText from './AppText';
 import { bgMapping } from '@/consts/theme';
-import { useGameContext } from '@/hooks/GameProvider';
 
 interface Props {
   text?: string;
@@ -13,13 +12,10 @@ interface Props {
 }
 
 const ThemedNavigateButton = ({ text, route, style, icon }: Props) => {
-  const { globalGameConfig } = useGameContext();
-
   return (
     <Link asChild href={route}>
       <Pressable
-        className={`m-auto h-[75px] w-[315px] rounded-xl ${bgMapping[style]} active:shadow-none`}
-        onPress={() => console.log(globalGameConfig)}>
+        className={`m-auto h-[75px] w-[315px] rounded-xl ${bgMapping[style]} active:shadow-none`}>
         <View className="flex-1 flex-col justify-center">
           <View className="flex-row justify-center gap-2">
             {icon?.()}

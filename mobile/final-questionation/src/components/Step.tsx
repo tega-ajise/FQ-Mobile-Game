@@ -14,7 +14,7 @@ interface StepProps {
 }
 
 const Step = ({ currentStep, step, children, changeStep }: StepProps) => {
-  const { currentTurnRole, handleViewChange } = useGameContext();
+  const { currentTurnRole } = useGameContext();
   const stepToCheck = !Array.isArray(step) ? [step] : step;
 
   // ensures that the other steps don't render
@@ -32,10 +32,10 @@ const Step = ({ currentStep, step, children, changeStep }: StepProps) => {
 
   // otherwise your content is rendered
   return (
-    <View>
+    <>
       {children}
       <Pressable
-        className={`m-auto h-[75px] w-[315px] rounded-xl ${bgMapping.primary} active:shadow-none`}>
+        className={`mx-auto h-[75px] w-[315px] rounded-xl ${bgMapping.primary} active:shadow-none`}>
         <View className="flex-1 flex-col justify-center">
           <View className="flex-row justify-center gap-2">
             <Feather name="check" size={24} color="white" />
@@ -43,7 +43,7 @@ const Step = ({ currentStep, step, children, changeStep }: StepProps) => {
           </View>
         </View>
       </Pressable>
-    </View>
+    </>
   );
 };
 
