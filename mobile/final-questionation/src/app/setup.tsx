@@ -9,13 +9,16 @@ import { useGameContext } from '@/hooks/GameProvider';
 import AppTextInput from '@/components/AppTextInput';
 
 const Setup = () => {
-  const { playerRole, setPlayerRole } = useGameContext();
+  const { playerRole, setPlayerRole, updateGameConfig, globalGameConfig } = useGameContext();
 
   return (
     <View className="flex-1 bg-background">
       <View className="m-auto">
         <AppText className="text-center text-2xl text-secondary">Create Lobby Name</AppText>
-        <AppTextInput classes="h-[73px] w-[280px]" />
+        <AppTextInput
+          classes="h-[73px] w-[280px]"
+          onChangeText={(txt) => updateGameConfig({ lobbyName: txt })}
+        />
       </View>
       <View className="m-auto">
         <AppText className="text-center text-[24px] text-secondary">Rounds of Questions</AppText>
@@ -27,6 +30,8 @@ const Setup = () => {
           maximumTrackTintColor="#44240C"
           step={1}
           renderStepNumber
+          value={globalGameConfig?.roundQuestions?.length}
+          onValueChange={(value) => updateGameConfig({ roundQuestions: new Array(value) })}
         />
       </View>
       <View className="m-auto">
@@ -39,6 +44,8 @@ const Setup = () => {
           maximumTrackTintColor="#44240C"
           step={1}
           renderStepNumber
+          value={globalGameConfig?.candidates?.length}
+          onValueChange={(value) => updateGameConfig({ candidates: new Array(value) })}
         />
       </View>
       <View>
@@ -55,7 +62,7 @@ const Setup = () => {
       <ThemedNavigateButton
         text="Start Game"
         icon={() => <Feather name="play" size={24} color="white" />}
-        route="/"
+        route={{ pathname: '/[gameplay]', params: { gameplay: globalGameConfig?.lobbyName ?? '' } }}
         style="primary"
       />
     </View>

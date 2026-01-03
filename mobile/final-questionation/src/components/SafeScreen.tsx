@@ -5,7 +5,9 @@ export default function SafeScreen({ children }: { children: React.ReactNode }) 
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={{ paddingTop: insets.top, flex: 1 }} className="bg-background">
+    <View
+      style={{ paddingTop: insets.top, paddingBottom: insets.bottom, flex: 1 }}
+      className="bg-background">
       {children}
     </View>
   );
