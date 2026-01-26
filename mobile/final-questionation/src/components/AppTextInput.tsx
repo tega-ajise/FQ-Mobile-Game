@@ -16,13 +16,14 @@ const AppTextInput = ({
   return (
     <View className={`flex-row rounded-[10px] border-[3px] border-outline ${classes}`}>
       {prefixIcon && (
-        <View className="flex h-full w-1/6 items-center justify-center rounded-s-[7px] bg-[#382211]">
+        <View className="flex w-1/6 items-center justify-center rounded-s-[7px] bg-[#382211]">
           {prefixIcon()}
         </View>
       )}
       <TextInput
         ref={ref}
         className={`flex-1 bg-black p-4 font-bold text-primary ${prefixIcon ? 'rounded-e-[7px]' : 'rounded-[7px]'} ${textClasses || 'text-3xl'} focus:cursor-text`}
+        autoCorrect={true}
         {...textProps}
       />
     </View>

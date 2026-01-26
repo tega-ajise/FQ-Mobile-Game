@@ -32,6 +32,13 @@ const RoundOne = () => {
 
   const [stagedListItem, setStagedListItem] = useState<string>('');
 
+  // return (
+  //   <FlatList
+  //     data={Array.from({ length: 300 }).map((_, idx) => `The item number ${idx}`)}
+  //     renderItem={({ item }) => <Text className="text-center text-2xl">{item}</Text>}
+  //   />
+  // );
+
   return (
     <View className="size-full bg-background p-2">
       <Step step="Choose question" currentStep={TEST_STEPS[stepIdx]} changeStep={changeStep}>
@@ -66,7 +73,7 @@ const RoundOne = () => {
             renderItem={({ index }) => (
               <SetupListItems currentStep={stepIdx} currentRound={index} />
             )}
-            nestedScrollEnabled={true}
+            style={{ marginBottom: 'auto' }}
           />
         </>
       </Step>
@@ -103,6 +110,7 @@ const SetupListItems = ({
             classes="w-[310px] h-[81px]"
           />
           <AppText className="text-2xl text-secondary">{`Round 1/5`}</AppText>
+          {/** make sure to change the round 1/5 here and in case 2 as well */}
           <View className="absolute -right-[55px] top-[17%]">
             <Pressable
               className={`h-[40px] w-[40px] rounded-full ${bgMapping.primary} active:shadow-none`}>

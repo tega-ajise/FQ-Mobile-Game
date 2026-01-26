@@ -18,13 +18,13 @@ const CuratorGameItem = ({ currentRound, isSetup }: ListItmProps) => {
   const textRef = useRef<TextInput>(null);
 
   return (
-    <View className="my-auto">
+    <View className="my-4">
       <View className="flex flex-row justify-center gap-6">
         <View className="flex flex-col items-end gap-2">
           <AppTextInput
             ref={textRef}
             prefixIcon={() => <FontAwesome5 name="question" color="white" />}
-            classes="w-[258px] h-fit"
+            classes="w-[258px]"
             textClasses="text-md"
             value={globalGameConfig?.roundQuestions?.[currentRound]}
             onChangeText={(txt) => {
