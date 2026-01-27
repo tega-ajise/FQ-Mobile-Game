@@ -9,10 +9,15 @@ import { useGameContext } from '@/hooks/GameProvider';
 import AppTextInput from '@/components/AppTextInput';
 
 const Setup = () => {
-  const { playerRole, updateGameConfig, globalGameConfig, setSetupCounts, setupCounts } =
-    useGameContext();
-  // just for the visual change
-  const [selectedRole, setSelectedRole] = useState<string>(playerRole.current ?? 'navigator');
+  const {
+    playerRole,
+    updateGameConfig,
+    globalGameConfig,
+    setSetupCounts,
+    setupCounts,
+    handleViewChange,
+  } = useGameContext();
+  const [selectedRole, setSelectedRole] = useState<string>(playerRole.current ?? 'navigator'); // just for the visual change (the useRef in the provider stores the change under the hood)
 
   return (
     <View className="flex-1 bg-background">

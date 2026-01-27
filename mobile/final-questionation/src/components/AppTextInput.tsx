@@ -9,7 +9,7 @@ const AppTextInput = ({
   ...textProps
 }: {
   prefixIcon?: () => React.ReactNode;
-  classes: string;
+  classes?: string;
   textClasses?: string;
   ref?: React.RefAttributes<TextInput>['ref'];
 } & TextInputProps) => {

@@ -1,5 +1,4 @@
-import { useFonts } from '@expo-google-fonts/luckiest-guy';
-import { LuckiestGuy_400Regular } from '@expo-google-fonts/luckiest-guy';
+import { LuckiestGuy_400Regular, useFonts } from '@expo-google-fonts/luckiest-guy';
 import { SplashScreen, Stack } from 'expo-router';
 import '../../global.css';
 import SafeScreen from '@/components/SafeScreen';

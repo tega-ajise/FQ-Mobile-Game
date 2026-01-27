@@ -1,33 +1,34 @@
 import { View, Pressable, TextInput } from 'react-native';
 import React, { useRef, useState } from 'react';
 import { bgMapping } from '@/consts/theme';
-import AppText from './AppText';
 import AppTextInput from './AppTextInput';
-import { Entypo, FontAwesome5 } from '@expo/vector-icons';
+import { Entypo, Feather, FontAwesome5 } from '@expo/vector-icons';
 import { useGameContext } from '@/hooks/GameProvider';
+import AppText from './AppText';
 
 interface ListItmProps {
-  currentRound: number;
+  choiceNumber: number;
   isSetup?: boolean;
   swap?: (offset: number) => void;
+  isNavigator?: boolean;
 }
 
-const CuratorGameItem = ({ currentRound, isSetup, swap }: ListItmProps) => {
+const NavigatorGameItem = ({ choiceNumber, isSetup, swap, isNavigator }: ListItmProps) => {
   const { globalGameConfig, updateGameConfig } = useGameContext();
   const [canEdit, setCanEdit] = useState(false);
-
+  const ranking = choiceNumber + 1;
   const textRef = useRef<TextInput>(null);
 
   return (
     <View className="my-4">
       <View className="flex flex-row justify-center gap-6">
-        {isSetup && (
+        {!isNavigator && (
           <View>
-            {currentRound === 0 ? (
+            {choiceNumber === 0 ? (
               <Pressable className="translate-y-2" onPress={() => swap?.(1)}>
                 <Entypo name="chevron-down" size={24} color="white" />
               </Pressable>
-            ) : currentRound < (globalGameConfig.roundQuestions?.length ?? 1) - 1 ? (
+            ) : choiceNumber < (globalGameConfig.candidates?.length ?? 1) - 1 ? (
               <>
                 <Pressable onPress={() => swap?.(-1)}>
                   <Entypo name="chevron-up" size={24} color="white" />
@@ -43,25 +44,33 @@ const CuratorGameItem = ({ currentRound, isSetup, swap }: ListItmProps) => {
             )}
           </View>
         )}
-        <View className="flex flex-col items-end gap-2">
-          <AppTextInput
-            ref={textRef}
-            prefixIcon={() => <FontAwesome5 name="question" color="white" />}
-            classes="w-[258px]"
-            textClasses="text-md"
-            value={globalGameConfig?.roundQuestions?.[currentRound]}
-            onChangeText={(txt) => {
-              const prevQuestions = globalGameConfig.roundQuestions ?? [];
-              prevQuestions[currentRound] = txt;
-              updateGameConfig({ roundQuestions: prevQuestions });
-            }}
-            multiline
-            onBlur={() => setCanEdit(false)}
-            readOnly={!canEdit}
-          />
-          <AppText className="text-[14px] text-secondary">Round {currentRound}</AppText>
-        </View>
-        {isSetup && (
+        <AppTextInput
+          ref={textRef}
+          prefixIcon={() =>
+            isNavigator ? (
+              <Feather name="star" size={24} color="white" />
+            ) : (
+              <AppText
+                className={`translate-y-1 text-xl ${ranking === 1 ? 'text-accent' : 'text-primary'}`}>
+                {ranking}
+              </AppText>
+            )
+          }
+          classes="w-[258px]"
+          textClasses="text-md"
+          value={globalGameConfig?.candidates?.[choiceNumber]}
+          multiline
+          readOnly={!canEdit || !isNavigator}
+          {...(isNavigator && {
+            onChangeText: (txt) => {
+              const prevCandidates = globalGameConfig.candidates ?? [];
+              prevCandidates[choiceNumber] = txt;
+              updateGameConfig({ candidates: prevCandidates });
+            },
+            onBlur: () => setCanEdit(false),
+          })}
+        />
+        {isNavigator && isSetup && (
           <Pressable
             className={`h-[40px] w-[40px] rounded-full ${bgMapping.secondary} active:shadow-none`}
             onPress={() => {
@@ -76,4 +85,4 @@ const CuratorGameItem = ({ currentRound, isSetup, swap }: ListItmProps) => {
   );
 };
 
-export default CuratorGameItem;
+export default NavigatorGameItem;

@@ -1,4 +1,4 @@
-import { DEFAULT_CONFIG } from '@/consts/round-zero-config';
+import { DEFAULT_ROUND_CONFIG } from '@/consts/config';
 import { GameConfig } from '@/types/types';
 import React, { createContext, useContext, useRef, useState } from 'react';
 
@@ -19,7 +19,7 @@ const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentTurnRole, setCurrentTurnRole] = useState<string>('curator'); // should be initialized to whether player is curator or not
   const playerRole = useRef<string>('');
 
-  const [setupCounts, setSetupCounts] = useState(DEFAULT_CONFIG);
+  const [setupCounts, setSetupCounts] = useState(DEFAULT_ROUND_CONFIG);
   // this is to be shared over the web socket
   const [globalGameConfig, setGlobalGameConfig] = useState<GameConfig>({});
 
