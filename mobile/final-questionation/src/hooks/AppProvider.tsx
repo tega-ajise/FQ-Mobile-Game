@@ -14,21 +14,20 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
+    // will have to put this link into the EXPO environment variables later
     const socket = io('ws://localhost:8080', {
       reconnectionDelayMax: 10000,
     });
     socketRef.current = socket;
-
-    // will have to put this link into the EXPO environment variables later
 
     socket.on('initLobbies', (allLobbies: LobbyDetails[]) => {
       setLobbies(allLobbies);
     });
 
     // seems like can only handle incoming events in the AppContext
-    socket.on('lobbyAdded', (allLobbies: LobbyDetails[]) => {
-      console.log('Refreshing lobbies');
-      setLobbies(allLobbies);
+    socket.on('lobbyAdded', (newLobby: LobbyDetails) => {
+      console.log('Refreshing lobbies.');
+      setLobbies((prev) => [...prev, newLobby]);
     });
 
     return () => {

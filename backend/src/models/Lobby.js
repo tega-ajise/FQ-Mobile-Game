@@ -7,6 +7,7 @@ const lobbySchema = new mongoose.Schema(
     lobbyName: {
       type: String,
       required: true,
+      unique: true,
     },
     newJoinerRole: {
       type: String,
@@ -18,6 +19,10 @@ const lobbySchema = new mongoose.Schema(
     },
     numberOfCandidates: {
       type: Number,
+      required: true,
+    },
+    hostId: {
+      type: String,
       required: true,
     },
   },

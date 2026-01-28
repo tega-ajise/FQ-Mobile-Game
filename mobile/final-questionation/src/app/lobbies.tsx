@@ -73,6 +73,7 @@ const Lobbies = () => {
               </View>
             );
           }}
+          ItemSeparatorComponent={() => <View className="h-4" />}
           ListEmptyComponent={<WaitingScreen isLobbyScreen />}
         />
       </View>

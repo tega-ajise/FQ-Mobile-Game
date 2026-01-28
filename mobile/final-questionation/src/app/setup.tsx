@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { Alert, View } from 'react-native';
 import React, { useState } from 'react';
 import Slider from '@react-native-community/slider';
 import ThemedNavigateButton from '@/components/ThemedNavigateButton';
@@ -21,10 +21,12 @@ const Setup = () => {
     const res = await socket?.emitWithAck('newRoom', {
       lobbyName: globalGameConfig.lobbyName,
       role: selectedRole,
+      hostId: socket.id,
       ...setupCounts,
     });
     if (!res.ok) {
       router.back();
+      Alert.alert('Error', 'Failed to create lobby!');
       throw new Error('Failed to create lobby \n' + globalGameConfig);
     }
   }

@@ -15,14 +15,16 @@ const io = new Server(8080, {
 });
 
 io.on("connection", (socket) => {
-  console.log(`${socket.id} connected`);
+  const hostId = socket.id;
+  console.log(`${hostId} connected`);
 
   loadLobbies().then((lobbies) => {
     socket.emit("initLobbies", lobbies);
   });
 
-  socket.on("disconnect", () => {
-    console.log("user disconnected");
+  socket.on("disconnect", async () => {
+    const deletedLobbies = await offLoadAnyHostedLobbies(hostId);
+    console.log("user disconnected. Total deleted lobbies: " + deletedLobbies);
   });
 
   socket.on("newRoom", async (gameConfig, callback) => {
@@ -31,13 +33,14 @@ io.on("connection", (socket) => {
     callback({ ok: !!res }); // need to do proper error handling in case room can't be created for whatever reason
 
     if (!res) return;
-    socket.emit("lobbyAdded", res);
+    io.emit("lobbyAdded", res);
     console.log(`Room created with name ${gameConfig.lobbyName}`);
   });
 });
 
 async function createNewLobby(gameConfig) {
-  const { lobbyName, role, numberOfQuestions, numberOfCandidates } = gameConfig;
+  const { lobbyName, role, numberOfQuestions, numberOfCandidates, hostId } =
+    gameConfig;
   const newJoinerRole = role === "curator" ? "navigator" : "curator";
   try {
     const addedLobby = new Lobby({
@@ -45,11 +48,12 @@ async function createNewLobby(gameConfig) {
       newJoinerRole,
       numberOfCandidates,
       numberOfQuestions,
+      hostId,
     });
     await addedLobby.save();
-    return await Lobby.find(); // return all lobbies instead of just one when one is added
+    return addedLobby;
   } catch (error) {
-    console.error("Failed to add lobby" + error);
+    console.error("Failed to add lobby " + error);
     return false;
   }
 }
@@ -60,6 +64,16 @@ async function loadLobbies() {
     return lobbies;
   } catch (error) {
     console.error("Failed to fetch lobbies");
+    throw error;
+  }
+}
+
+async function offLoadAnyHostedLobbies(host) {
+  try {
+    const hostedLobbies = await Lobby.deleteMany({ hostId: host });
+    return hostedLobbies.deletedCount;
+  } catch (error) {
+    console.error(`Failed to delete lobbies with host ${host}`);
     throw error;
   }
 }
