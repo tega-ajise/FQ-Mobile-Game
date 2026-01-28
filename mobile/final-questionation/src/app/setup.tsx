@@ -4,20 +4,30 @@ import Slider from '@react-native-community/slider';
 import ThemedNavigateButton from '@/components/ThemedNavigateButton';
 import { Feather } from '@expo/vector-icons';
 import AppText from '@/components/AppText';
-import CustomRadio from '@/components/CustomRadio';
+import CustomRadio from '@/components/setup/CustomRadio';
 import { useGameContext } from '@/hooks/GameProvider';
 import AppTextInput from '@/components/AppTextInput';
+import { useAppContext } from '@/hooks/AppProvider';
+import { useRouter } from 'expo-router';
 
 const Setup = () => {
-  const {
-    playerRole,
-    updateGameConfig,
-    globalGameConfig,
-    setSetupCounts,
-    setupCounts,
-    handleViewChange,
-  } = useGameContext();
+  const { playerRole, updateGameConfig, globalGameConfig, setSetupCounts, setupCounts } =
+    useGameContext();
+  const { socket } = useAppContext();
+  const router = useRouter();
   const [selectedRole, setSelectedRole] = useState<string>(playerRole.current ?? 'navigator'); // just for the visual change (the useRef in the provider stores the change under the hood)
+
+  async function createLobby() {
+    const res = await socket?.emitWithAck('newRoom', {
+      lobbyName: globalGameConfig.lobbyName,
+      role: selectedRole,
+      ...setupCounts,
+    });
+    if (!res.ok) {
+      router.back();
+      throw new Error('Failed to create lobby \n' + globalGameConfig);
+    }
+  }
 
   return (
     <View className="flex-1 bg-background">
@@ -79,6 +89,7 @@ const Setup = () => {
         icon={() => <Feather name="play" size={24} color="white" />}
         route={{ pathname: '/[gameplay]', params: { gameplay: globalGameConfig?.lobbyName ?? '' } }}
         style="primary"
+        onClick={createLobby}
         disabled={!globalGameConfig.lobbyName || !playerRole}
       />
     </View>

@@ -1,10 +1,10 @@
 import { View, Pressable, TextInput } from 'react-native';
 import React, { useRef, useState } from 'react';
 import { bgMapping } from '@/consts/theme';
-import AppTextInput from './AppTextInput';
+import AppTextInput from '../AppTextInput';
 import { Entypo, Feather, FontAwesome5 } from '@expo/vector-icons';
 import { useGameContext } from '@/hooks/GameProvider';
-import AppText from './AppText';
+import AppText from '../AppText';
 
 interface ListItmProps {
   choiceNumber: number;
@@ -22,7 +22,7 @@ const NavigatorGameItem = ({ choiceNumber, isSetup, swap, isNavigator }: ListItm
   return (
     <View className="my-4">
       <View className="flex flex-row justify-center gap-6">
-        {!isNavigator && (
+        {!isNavigator && (globalGameConfig.candidates ?? [])?.length > 1 && (
           <View>
             {choiceNumber === 0 ? (
               <Pressable className="translate-y-2" onPress={() => swap?.(1)}>

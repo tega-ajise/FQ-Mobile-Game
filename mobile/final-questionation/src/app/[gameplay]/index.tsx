@@ -7,10 +7,10 @@ import AppTextInput from '@/components/AppTextInput';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { bgMapping } from '@/consts/theme';
 import AppText from '@/components/AppText';
-import CuratorGameItem from '@/components/CuratorGameItem';
+import CuratorGameItem from '@/components/setup/CuratorGameItem';
 import { SETUP_STEPS } from '@/consts/config';
 import { GameConfig } from '@/types/types';
-import NavigatorGameItem from '@/components/NavigatorGameItem';
+import NavigatorGameItem from '@/components/setup/NavigatorGameItem';
 
 const RoundOne = () => {
   const router = useRouter();

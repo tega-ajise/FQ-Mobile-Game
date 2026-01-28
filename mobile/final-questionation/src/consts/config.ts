@@ -1,4 +1,6 @@
-export const DEFAULT_ROUND_CONFIG: { numberOfQuestions: number; numberOfCandidates: number } = {
+import { BaseGameConfig } from '@/types/types';
+
+export const DEFAULT_ROUND_CONFIG: BaseGameConfig = {
   numberOfQuestions: 4,
   numberOfCandidates: 8,
 };

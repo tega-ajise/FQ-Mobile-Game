@@ -1,6 +1,6 @@
 import { View, TouchableOpacity } from 'react-native';
 import React, { FC } from 'react';
-import AppText from './AppText';
+import AppText from '../AppText';
 
 type RadioProps = {
   options: { label: string; value: string }[];

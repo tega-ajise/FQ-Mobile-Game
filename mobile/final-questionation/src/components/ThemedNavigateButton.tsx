@@ -10,14 +10,16 @@ interface Props {
   style: 'primary' | 'secondary' | 'howToPlay';
   icon?: () => React.ReactNode;
   disabled?: boolean;
+  onClick?: () => void;
 }
 
-const ThemedNavigateButton = ({ text, route, style, icon, disabled = false }: Props) => {
+const ThemedNavigateButton = ({ text, route, style, icon, onClick, disabled = false }: Props) => {
   return (
     <Link asChild href={route}>
       <Pressable
         className={`m-auto h-[75px] w-[315px] rounded-xl ${bgMapping[style]} active:shadow-none`}
-        disabled={disabled}>
+        disabled={disabled}
+        onPress={onClick}>
         <View className="flex-1 flex-col justify-center">
           <View className="flex-row justify-center gap-2">
             {icon?.()}

@@ -24,6 +24,7 @@ const Step = ({ currentStep, step, children, changeStep }: StepProps) => {
 
   // checks that once on the current step, is the role is appropriate for the step
   if (currentTurnRole !== currentStep.role) {
+    /** CHANGE THIS SO ITS playerRole !== currentStep.role. This line (and currentTurnRole as a whole) is redundant right now */
     return (
       <View>
         <WaitingScreen />

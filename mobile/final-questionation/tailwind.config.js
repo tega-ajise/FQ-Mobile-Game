@@ -18,6 +18,7 @@ module.exports = {
         primary: '#FFF',
         secondary: '#7D4318',
         outline: '#9F9898',
+        instructions: '#2F2A27',
       },
     },
   },

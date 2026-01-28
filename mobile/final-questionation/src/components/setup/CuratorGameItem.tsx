@@ -1,8 +1,8 @@
 import { View, Pressable, TextInput } from 'react-native';
 import React, { useRef, useState } from 'react';
 import { bgMapping } from '@/consts/theme';
-import AppText from './AppText';
-import AppTextInput from './AppTextInput';
+import AppText from '../AppText';
+import AppTextInput from '../AppTextInput';
 import { Entypo, FontAwesome5 } from '@expo/vector-icons';
 import { useGameContext } from '@/hooks/GameProvider';
 
@@ -21,7 +21,7 @@ const CuratorGameItem = ({ currentRound, isSetup, swap }: ListItmProps) => {
   return (
     <View className="my-4">
       <View className="flex flex-row justify-center gap-6">
-        {isSetup && (
+        {isSetup && (globalGameConfig?.roundQuestions ?? [])?.length > 1 && (
           <View>
             {currentRound === 0 ? (
               <Pressable className="translate-y-2" onPress={() => swap?.(1)}>
