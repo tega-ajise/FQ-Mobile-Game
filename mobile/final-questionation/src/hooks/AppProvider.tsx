@@ -1,21 +1,24 @@
-import { LobbyDetails } from '@/types/types';
+import { GameConfig, LobbyDetails } from '@/types/types';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
+
+type GameLoopState = 'TODO';
+type TGameState = ((GameConfig | GameLoopState) & { stepIdx: number }) | undefined;
 
 interface AppContextType {
   socket: Socket | null;
   lobbies: LobbyDetails[];
   waitingForJoiner: boolean;
   setWaitingForJoiner: React.Dispatch<React.SetStateAction<boolean>>;
-  gameState: any; // FIX THISSSSSSSS!!!
+  gameState: TGameState;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const AppProvider = ({ children }: { children: React.ReactNode }) => {
-  const [waitingForJoiner, setWaitingForJoiner] = useState<boolean>(false);
+  const [waitingForJoiner, setWaitingForJoiner] = useState<boolean>(true);
   const [lobbies, setLobbies] = useState<LobbyDetails[]>([]);
-  const [gameState, setGameState] = useState();
+  const [gameState, setGameState] = useState<TGameState>();
 
   const socketRef = useRef<Socket | null>(null);
 
@@ -36,7 +39,7 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
       setLobbies((prev) => [...prev, newLobby]);
     });
 
-    socket.on('nextStep', (gs) => {
+    socket.on('nextStep', (gs: TGameState) => {
       setGameState(gs);
     });
 

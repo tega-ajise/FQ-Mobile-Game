@@ -59,7 +59,7 @@ io.on("connection", (socket) => {
   socket.on("nextStep", (currentGameState, callback) => {
     try {
       const room = currentGameState?.lobbyName;
-      socket.to(room).emit("nextStep", currentGameState);
+      io.to(room).emit("nextStep", currentGameState);
       callback({ ok: true });
     } catch (error) {
       console.error("Unable to send new game state to room" + room);

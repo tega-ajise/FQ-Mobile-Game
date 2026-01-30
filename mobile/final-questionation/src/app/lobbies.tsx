@@ -7,6 +7,7 @@ import WaitingScreen from '@/components/WaitingScreen';
 import AppText from '@/components/AppText';
 import AppTextInput from '@/components/AppTextInput';
 import { useGameContext } from '@/hooks/GameProvider';
+import { MongoDBLobbyModel } from '@/types/types';
 
 const Lobbies = () => {
   const { lobbies, socket } = useAppContext();
@@ -23,10 +24,10 @@ const Lobbies = () => {
     }
     socket
       ?.emitWithAck('joinRoom', lobby)
-      .then((gameState) => {
-        if (!gameState) throw new Error('Could not join room');
+      .then((rawLobbyInfo: MongoDBLobbyModel) => {
+        if (!rawLobbyInfo) throw new Error('Could not join room');
 
-        const { newJoinerRole, numberOfCandidates, numberOfQuestions, lobbyName } = gameState;
+        const { newJoinerRole, numberOfCandidates, numberOfQuestions, lobbyName } = rawLobbyInfo;
         playerRole.current = newJoinerRole;
         setSetupCounts({ numberOfCandidates, numberOfQuestions });
         updateGameConfig({ lobbyName });

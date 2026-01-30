@@ -20,31 +20,25 @@ const RoundOne = () => {
     useGameContext();
   const { socket, gameState } = useAppContext();
 
-  const [stepIdx, setStepIdx] = useState(0);
+  const stepIdx = gameState
+    ? gameState.stepIdx < SETUP_STEPS.length
+      ? gameState.stepIdx
+      : gameState.stepIdx - 1
+    : 0;
   const [stagedListItem, setStagedListItem] = useState<string>('');
-
-  const changeStep = useCallback(() => {
-    setStepIdx((prev) => {
-      if (prev < SETUP_STEPS.length - 1) {
-        return prev + 1;
-      }
-      router.navigate(`/${globalGameConfig.lobbyName}/game-loop`);
-      return prev;
-    });
-  }, [globalGameConfig, router]);
 
   const changeStepActive = useCallback(() => {
     // when change step, update the current lobby about the game state
+    const newStep = stepIdx + 1;
     socket
-      ?.emitWithAck('nextStep', globalGameConfig)
+      ?.emitWithAck('nextStep', { ...globalGameConfig, stepIdx: newStep })
       .then((cb) => {
         if (!cb.ok) throw new Error('Could not update view');
-        changeStep();
       })
       .catch((err) => {
         throw err;
       });
-  }, [globalGameConfig, changeStep, socket]);
+  }, [globalGameConfig, socket, stepIdx]);
 
   const swapSetupItemsOrder = useCallback(
     (listName: keyof GameConfig, currentIdx: number, offset: number) => {
@@ -57,11 +51,23 @@ const RoundOne = () => {
     [globalGameConfig, updateGameConfig]
   );
 
+  // 1) only gameState can trigger this useEffect (reason for !gameState upon initial render leading to return)
+  // when gameState triggers it, it updates gameConfig, so other player can see candidate/question updates
+  // 2) second half of early return if statement checks if globalGameConfig has already been updated
+  // it will be updated when stepIdx changes from what it previously was (granted stepIdx is a defined property)
   useEffect(() => {
-    if (playerRole.current === SETUP_STEPS[stepIdx].role || !gameState) return;
-    changeStep();
-    updateGameConfig(gameState);
-  }, [gameState, changeStep, updateGameConfig, stepIdx, playerRole]);
+    if (
+      !gameState ||
+      (globalGameConfig.stepIdx &&
+        SETUP_STEPS[globalGameConfig.stepIdx].role !==
+          SETUP_STEPS[globalGameConfig.stepIdx - 1].role) // to check if gameConfig has already been updated
+    )
+      /** CURRENT BUG in that game config doesn't update back for curator on final turn */
+      return;
+    if (gameState.stepIdx >= SETUP_STEPS.length)
+      router.navigate(`/${(gameState as GameConfig)?.lobbyName}/game-loop`);
+    else updateGameConfig(gameState as GameConfig);
+  }, [gameState, updateGameConfig, router, playerRole, globalGameConfig]);
 
   return (
     <View className="size-full bg-background p-2">
