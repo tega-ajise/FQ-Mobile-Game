@@ -3,6 +3,7 @@ import React from 'react';
 
 const RoundDeetsGoHere = () => {
   // first thing that needs to be done is copying over globalGameConfig
+
   return (
     <View>
       <Text className="text-3xl">The Common View. Read Only for the Curator</Text>

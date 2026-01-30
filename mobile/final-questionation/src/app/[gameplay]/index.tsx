@@ -55,19 +55,14 @@ const RoundOne = () => {
   // when gameState triggers it, it updates gameConfig, so other player can see candidate/question updates
   // 2) second half of early return if statement checks if globalGameConfig has already been updated
   // it will be updated when stepIdx changes from what it previously was (granted stepIdx is a defined property)
+
+  // UPDATE: remove updateGameConfig entirely --> deal with linting error later
   useEffect(() => {
-    if (
-      !gameState ||
-      (globalGameConfig.stepIdx &&
-        SETUP_STEPS[globalGameConfig.stepIdx].role !==
-          SETUP_STEPS[globalGameConfig.stepIdx - 1].role) // to check if gameConfig has already been updated
-    )
-      /** CURRENT BUG in that game config doesn't update back for curator on final turn */
-      return;
+    if (!gameState) return;
     if (gameState.stepIdx >= SETUP_STEPS.length)
       router.navigate(`/${(gameState as GameConfig)?.lobbyName}/game-loop`);
     else updateGameConfig(gameState as GameConfig);
-  }, [gameState, updateGameConfig, router, playerRole, globalGameConfig]);
+  }, [gameState, router, playerRole]);
 
   return (
     <View className="size-full bg-background p-2">
