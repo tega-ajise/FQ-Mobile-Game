@@ -3,8 +3,6 @@ import { GameConfig } from '@/types/types';
 import React, { createContext, useContext, useRef, useState } from 'react';
 
 interface GameContextValue {
-  currentTurnRole: string;
-  handleViewChange: () => void;
   playerRole: React.RefObject<string>;
   updateGameConfig: (config: Partial<GameConfig>) => void;
   globalGameConfig: GameConfig;
@@ -16,18 +14,11 @@ interface GameContextValue {
 
 const GameContext = createContext<GameContextValue>({} as GameContextValue);
 const GameProvider = ({ children }: { children: React.ReactNode }) => {
-  const [currentTurnRole, setCurrentTurnRole] = useState<string>('curator'); // should be initialized to whether player is curator or not
   const playerRole = useRef<string>('');
 
   const [setupCounts, setSetupCounts] = useState(DEFAULT_ROUND_CONFIG);
   // this is to be shared over the web socket
   const [globalGameConfig, setGlobalGameConfig] = useState<GameConfig>({});
-
-  const handleViewChange = () => {
-    setCurrentTurnRole((prev) => {
-      return prev === 'curator' ? 'navigator' : 'curator';
-    });
-  };
 
   const updateGameConfig = (config: Partial<GameConfig>) => {
     setGlobalGameConfig((prev) => ({ ...prev, ...config }));
@@ -36,8 +27,6 @@ const GameProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <GameContext.Provider
       value={{
-        currentTurnRole,
-        handleViewChange,
         playerRole,
         updateGameConfig,
         globalGameConfig,

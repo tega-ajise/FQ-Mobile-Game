@@ -10,19 +10,19 @@ interface ListItmProps {
   choiceNumber: number;
   isSetup?: boolean;
   swap?: (offset: number) => void;
-  isNavigator?: boolean;
 }
 
-const NavigatorGameItem = ({ choiceNumber, isSetup, swap, isNavigator }: ListItmProps) => {
-  const { globalGameConfig, updateGameConfig } = useGameContext();
+const NavigatorGameItem = ({ choiceNumber, isSetup, swap }: ListItmProps) => {
+  const { globalGameConfig, updateGameConfig, playerRole } = useGameContext();
   const [canEdit, setCanEdit] = useState(false);
+  const isNavigator = playerRole.current === 'navigator';
   const ranking = choiceNumber + 1;
   const textRef = useRef<TextInput>(null);
 
   return (
     <View className="my-4">
       <View className="flex flex-row justify-center gap-6">
-        {!isNavigator && (globalGameConfig.candidates ?? [])?.length > 1 && (
+        {!isNavigator && (globalGameConfig.candidates ?? [])?.length > 1 && isSetup && (
           <View>
             {choiceNumber === 0 ? (
               <Pressable className="translate-y-2" onPress={() => swap?.(1)}>
@@ -70,14 +70,24 @@ const NavigatorGameItem = ({ choiceNumber, isSetup, swap, isNavigator }: ListItm
             onBlur: () => setCanEdit(false),
           })}
         />
-        {isNavigator && isSetup && (
+        {isNavigator && (
           <Pressable
             className={`h-[40px] w-[40px] rounded-full ${bgMapping.secondary} active:shadow-none`}
-            onPress={() => {
-              textRef?.current?.focus();
-              setCanEdit(true);
-            }}>
-            <FontAwesome5 name="pen" size={18} color="white" style={{ margin: 'auto' }} />
+            onPress={
+              isSetup
+                ? () => {
+                    textRef?.current?.focus();
+                    setCanEdit(true);
+                  }
+                : () => {
+                    console.log('TODO for crossing out an element');
+                  }
+            }>
+            {isSetup ? (
+              <FontAwesome5 name="pen" size={18} color="white" style={{ margin: 'auto' }} />
+            ) : (
+              <Feather name="x" size={24} color="white" style={{ margin: 'auto' }} />
+            )}
           </Pressable>
         )}
       </View>

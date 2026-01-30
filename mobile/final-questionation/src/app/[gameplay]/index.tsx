@@ -16,8 +16,7 @@ import { useAppContext } from '@/hooks/AppProvider';
 const RoundOne = () => {
   const router = useRouter();
 
-  const { handleViewChange, globalGameConfig, setupCounts, updateGameConfig, playerRole } =
-    useGameContext();
+  const { globalGameConfig, setupCounts, updateGameConfig, playerRole } = useGameContext();
   const { socket, gameState } = useAppContext();
 
   const stepIdx = gameState
@@ -174,7 +173,6 @@ const RoundOne = () => {
           )}
         />
       </Step>
-      <Button onPress={handleViewChange} title="Handle View Change" />
     </View>
   );
 };
@@ -203,7 +201,6 @@ const SetupListItems = ({
           choiceNumber={currentRound}
           swap={swapFn.bind(null, 'candidates', currentRound)}
           isSetup
-          isNavigator
         />
       );
     case 2:
