@@ -2,17 +2,23 @@ import { Server } from "socket.io";
 import { connectDB } from "./config/db.js";
 import dotenv from "dotenv";
 import Lobby from "./models/Lobby.js";
+import {
+  loadLobbies,
+  createNewLobby,
+  offLoadAnyHostedLobbies,
+} from "./controllers/lobbyController.js";
 dotenv.config();
 
-connectDB();
 // ws://localhost:8080 - notice how it is not an http server
 // can either pass in a server object or the port number of the server you want instantiated
-const io = new Server(8080, {
+// OR just the options, then listen to the port later
+const io = new Server({
   cors: {
     origin: "*",
   },
   connectionStateRecovery: {},
 });
+connectDB().then(() => io.listen(8080)); // want db connected THEN server starts
 
 io.on("connection", (socket) => {
   const hostId = socket.id;
@@ -25,6 +31,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", async () => {
     const deletedLobbies = await offLoadAnyHostedLobbies(hostId);
     console.log("user disconnected. Total deleted lobbies: " + deletedLobbies);
+    // io.in("room_name").disconnectSockets()
   });
 
   socket.on("newRoom", async (gameConfig, callback) => {
@@ -36,44 +43,27 @@ io.on("connection", (socket) => {
     io.emit("lobbyAdded", res);
     console.log(`Room created with name ${gameConfig.lobbyName}`);
   });
+
+  socket.on("joinRoom", async (lobbyName, callback) => {
+    try {
+      // fetch the lobby details
+      const lobbyDetails = await Lobby.findOne({ lobbyName });
+      socket.join(lobbyName);
+      callback(lobbyDetails);
+    } catch (error) {
+      console.error(error);
+      callback(null);
+    }
+  });
+
+  socket.on("nextStep", (currentGameState, callback) => {
+    try {
+      const room = currentGameState?.lobbyName;
+      socket.to(room).emit("nextStep", currentGameState);
+      callback({ ok: true });
+    } catch (error) {
+      console.error("Unable to send new game state to room" + room);
+      callback({ ok: false });
+    }
+  });
 });
-
-async function createNewLobby(gameConfig) {
-  const { lobbyName, role, numberOfQuestions, numberOfCandidates, hostId } =
-    gameConfig;
-  const newJoinerRole = role === "curator" ? "navigator" : "curator";
-  try {
-    const addedLobby = new Lobby({
-      lobbyName,
-      newJoinerRole,
-      numberOfCandidates,
-      numberOfQuestions,
-      hostId,
-    });
-    await addedLobby.save();
-    return addedLobby;
-  } catch (error) {
-    console.error("Failed to add lobby " + error);
-    return false;
-  }
-}
-
-async function loadLobbies() {
-  try {
-    const lobbies = await Lobby.find();
-    return lobbies;
-  } catch (error) {
-    console.error("Failed to fetch lobbies");
-    throw error;
-  }
-}
-
-async function offLoadAnyHostedLobbies(host) {
-  try {
-    const hostedLobbies = await Lobby.deleteMany({ hostId: host });
-    return hostedLobbies.deletedCount;
-  } catch (error) {
-    console.error(`Failed to delete lobbies with host ${host}`);
-    throw error;
-  }
-}

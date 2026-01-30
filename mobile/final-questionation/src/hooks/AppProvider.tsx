@@ -5,12 +5,18 @@ import { io, Socket } from 'socket.io-client';
 interface AppContextType {
   socket: Socket | null;
   lobbies: LobbyDetails[];
+  waitingForJoiner: boolean;
+  setWaitingForJoiner: React.Dispatch<React.SetStateAction<boolean>>;
+  gameState: any; // FIX THISSSSSSSS!!!
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const AppProvider = ({ children }: { children: React.ReactNode }) => {
+  const [waitingForJoiner, setWaitingForJoiner] = useState<boolean>(false);
   const [lobbies, setLobbies] = useState<LobbyDetails[]>([]);
+  const [gameState, setGameState] = useState();
+
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
@@ -30,6 +36,10 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
       setLobbies((prev) => [...prev, newLobby]);
     });
 
+    socket.on('nextStep', (gs) => {
+      setGameState(gs);
+    });
+
     return () => {
       socket.off('initLobbies');
       socket.off('lobbyAdded');
@@ -39,7 +49,14 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <AppContext.Provider value={{ socket: socketRef.current, lobbies }}>
+    <AppContext.Provider
+      value={{
+        socket: socketRef.current,
+        lobbies,
+        waitingForJoiner,
+        setWaitingForJoiner,
+        gameState,
+      }}>
       {children}
     </AppContext.Provider>
   );

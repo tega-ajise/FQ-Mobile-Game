@@ -1,5 +1,5 @@
 import { View, Button, Pressable, FlatList } from 'react-native';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import Step from '@/components/Step';
 import { useGameContext } from '@/hooks/GameProvider';
@@ -11,13 +11,19 @@ import CuratorGameItem from '@/components/setup/CuratorGameItem';
 import { SETUP_STEPS } from '@/consts/config';
 import { GameConfig } from '@/types/types';
 import NavigatorGameItem from '@/components/setup/NavigatorGameItem';
+import { useAppContext } from '@/hooks/AppProvider';
 
 const RoundOne = () => {
   const router = useRouter();
-  const { handleViewChange, globalGameConfig, setupCounts, updateGameConfig } = useGameContext();
-  const [stepIdx, setStepIdx] = useState(0);
 
-  const changeStep = () => {
+  const { handleViewChange, globalGameConfig, setupCounts, updateGameConfig, playerRole } =
+    useGameContext();
+  const { socket, gameState } = useAppContext();
+
+  const [stepIdx, setStepIdx] = useState(0);
+  const [stagedListItem, setStagedListItem] = useState<string>('');
+
+  const changeStep = useCallback(() => {
     setStepIdx((prev) => {
       if (prev < SETUP_STEPS.length - 1) {
         return prev + 1;
@@ -25,21 +31,41 @@ const RoundOne = () => {
       router.navigate(`/${globalGameConfig.lobbyName}/game-loop`);
       return prev;
     });
-  };
+  }, [globalGameConfig, router]);
 
-  const swapSetupItemsOrder = (listName: keyof GameConfig, currentIdx: number, offset: number) => {
-    const ls = globalGameConfig[listName] as string[];
-    const temp = ls[currentIdx];
-    ls[currentIdx] = ls[currentIdx + offset];
-    ls[currentIdx + offset] = temp;
-    updateGameConfig({ [listName]: ls });
-  };
+  const changeStepActive = useCallback(() => {
+    // when change step, update the current lobby about the game state
+    socket
+      ?.emitWithAck('nextStep', globalGameConfig)
+      .then((cb) => {
+        if (!cb.ok) throw new Error('Could not update view');
+        changeStep();
+      })
+      .catch((err) => {
+        throw err;
+      });
+  }, [globalGameConfig, changeStep, socket]);
 
-  const [stagedListItem, setStagedListItem] = useState<string>('');
+  const swapSetupItemsOrder = useCallback(
+    (listName: keyof GameConfig, currentIdx: number, offset: number) => {
+      const ls = globalGameConfig[listName] as string[];
+      const temp = ls[currentIdx];
+      ls[currentIdx] = ls[currentIdx + offset];
+      ls[currentIdx + offset] = temp;
+      updateGameConfig({ [listName]: ls });
+    },
+    [globalGameConfig, updateGameConfig]
+  );
+
+  useEffect(() => {
+    if (playerRole.current === SETUP_STEPS[stepIdx].role || !gameState) return;
+    changeStep();
+    updateGameConfig(gameState);
+  }, [gameState, changeStep, updateGameConfig, stepIdx, playerRole]);
 
   return (
     <View className="size-full bg-background p-2">
-      <Step step="Choose question" currentStep={SETUP_STEPS[stepIdx]} changeStep={changeStep}>
+      <Step step="Choose question" currentStep={SETUP_STEPS[stepIdx]} changeStep={changeStepActive}>
         <>
           {(globalGameConfig.roundQuestions ?? []).length <= setupCounts.numberOfQuestions && (
             <View className="relative mr-16 flex flex-col items-end gap-2">
@@ -83,7 +109,7 @@ const RoundOne = () => {
       <Step
         step="Create candidates list"
         currentStep={SETUP_STEPS[stepIdx]}
-        changeStep={changeStep}>
+        changeStep={changeStepActive}>
         <AppText className="m-4 text-center text-3xl text-accent">
           {globalGameConfig?.roundQuestions?.[0]}
         </AppText>
@@ -124,7 +150,7 @@ const RoundOne = () => {
         />
       </Step>
 
-      <Step step="Rank candidates" currentStep={SETUP_STEPS[stepIdx]} changeStep={changeStep}>
+      <Step step="Rank candidates" currentStep={SETUP_STEPS[stepIdx]} changeStep={changeStepActive}>
         <View className="relative mx-auto flex flex-col items-end gap-2">
           <AppTextInput
             value={globalGameConfig?.roundQuestions?.at(-1)}

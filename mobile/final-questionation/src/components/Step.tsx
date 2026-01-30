@@ -16,15 +16,14 @@ interface StepProps {
 const Step = ({ currentStep, step, children, changeStep }: StepProps) => {
   const screenHeight = Dimensions.get('window').height;
 
-  const { currentTurnRole } = useGameContext();
+  const { playerRole } = useGameContext();
   const stepToCheck = !Array.isArray(step) ? [step] : step;
 
   // ensures that the other steps don't render
   if (!stepToCheck.includes(currentStep.step)) return null;
 
   // checks that once on the current step, is the role is appropriate for the step
-  if (currentTurnRole !== currentStep.role) {
-    /** CHANGE THIS SO ITS playerRole !== currentStep.role. This line (and currentTurnRole as a whole) is redundant right now */
+  if (playerRole.current !== currentStep.role) {
     return (
       <View>
         <WaitingScreen />

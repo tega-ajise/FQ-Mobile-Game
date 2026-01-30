@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Pressable, Alert } from 'react-native';
+import { View, FlatList, Pressable, Alert } from 'react-native';
 import React, { useState } from 'react';
 import { Link, useRouter } from 'expo-router';
 import { Entypo } from '@expo/vector-icons';
@@ -6,19 +6,34 @@ import { useAppContext } from '@/hooks/AppProvider';
 import WaitingScreen from '@/components/WaitingScreen';
 import AppText from '@/components/AppText';
 import AppTextInput from '@/components/AppTextInput';
+import { useGameContext } from '@/hooks/GameProvider';
 
 const Lobbies = () => {
-  const { lobbies } = useAppContext();
+  const { lobbies, socket } = useAppContext();
+  const { playerRole, setSetupCounts, updateGameConfig } = useGameContext();
   const router = useRouter();
 
   const [manualLobbyEntry, setManualLobbyEntry] = useState<string>('');
 
-  const lobbyEntryValidation = () => {
-    const lobby = lobbies.find((lby) => lby.lobbyName === manualLobbyEntry);
-    if (!lobby) {
+  const lobbyEntryValidation = (selectedLobby?: string) => {
+    const lobby =
+      lobbies.find((lby) => lby.lobbyName === manualLobbyEntry)?.lobbyName ?? selectedLobby;
+    if (!lobby && !selectedLobby) {
       return Alert.alert('Lobby not found', 'Please try another lobby name');
     }
-    router.push({ pathname: '/[gameplay]', params: { gameplay: lobby.lobbyName } });
+    socket
+      ?.emitWithAck('joinRoom', lobby)
+      .then((gameState) => {
+        if (!gameState) throw new Error('Could not join room');
+
+        const { newJoinerRole, numberOfCandidates, numberOfQuestions, lobbyName } = gameState;
+        playerRole.current = newJoinerRole;
+        setSetupCounts({ numberOfCandidates, numberOfQuestions });
+        updateGameConfig({ lobbyName });
+
+        router.push({ pathname: '/[gameplay]', params: { gameplay: lobby } });
+      })
+      .catch((err) => Alert.alert(err, 'Please try again'));
   };
 
   return (
@@ -33,7 +48,7 @@ const Lobbies = () => {
           />
           <Pressable
             className="h-[55px] w-[66px] rounded-2xl bg-btnprimary shadow-[0px_4.6px_0px_rgba(40,118,40,1)]"
-            onPress={lobbyEntryValidation}>
+            onPress={() => lobbyEntryValidation()}>
             <Entypo name="controller-play" size={52} color="white" style={{ margin: 'auto' }} />
           </Pressable>
         </View>
@@ -61,7 +76,7 @@ const Lobbies = () => {
                   asChild>
                   <Pressable
                     className="size-[74px] rounded-2xl bg-btnprimary shadow-[0px_4.6px_0px_rgba(40,118,40,1)]"
-                    onPress={lobbyEntryValidation}>
+                    onPress={() => lobbyEntryValidation(item.lobbyName)}>
                     <Entypo
                       name="controller-play"
                       size={52}
