@@ -26,7 +26,7 @@ const Setup = () => {
     });
     if (!res.ok) {
       router.back();
-      Alert.alert('Error', 'Failed to create lobby!');
+      Alert.alert('Failed to create lobby', 'Please try a different name');
       throw new Error('Failed to create lobby \n' + globalGameConfig);
     }
   }

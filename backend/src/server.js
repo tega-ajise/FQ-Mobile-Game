@@ -66,4 +66,10 @@ io.on("connection", (socket) => {
       callback({ ok: false });
     }
   });
+
+  socket.on("eliminateItem", (currentGameState) => {
+    const { lobbyName, value } = currentGameState;
+    const room = lobbyName;
+    io.to(room).emit("eliminateItem", value);
+  });
 });

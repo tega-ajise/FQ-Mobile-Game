@@ -5,16 +5,36 @@ import AppTextInput from '../AppTextInput';
 import { Entypo, Feather, FontAwesome5 } from '@expo/vector-icons';
 import { useGameContext } from '@/hooks/GameProvider';
 import AppText from '../AppText';
+import { useAppContext } from '@/hooks/AppProvider';
+import { GameLoopState } from '@/types/types';
 
 interface ListItmProps {
   choiceNumber: number;
+  val?: string;
   isSetup?: boolean;
   swap?: (offset: number) => void;
+  crossedItemState?: [string | undefined, React.Dispatch<React.SetStateAction<string | undefined>>];
 }
 
-const NavigatorGameItem = ({ choiceNumber, isSetup, swap }: ListItmProps) => {
+const NavigatorGameItem = ({
+  choiceNumber,
+  isSetup,
+  swap,
+  val,
+  crossedItemState,
+}: ListItmProps) => {
   const { globalGameConfig, updateGameConfig, playerRole } = useGameContext();
+  const { gameState } = useAppContext();
+
   const [canEdit, setCanEdit] = useState(false);
+  const [currentlyCrossedItem, setCurrentlyCrossedItem] = crossedItemState || [null, null]; // for navigator in game loop, to handle changes for selecting items to eliminate
+
+  /** Determining crossed out items for game loop */
+  const currentItemData = (gameState as GameLoopState)?.candidates?.find((v) => v.content === val); // need to do this instead of using choiceNumber to find value
+  const hasCrossedOut = currentlyCrossedItem === val;
+  const isEliminated = currentItemData?.isEliminated || hasCrossedOut;
+
+  /** For setup */
   const isNavigator = playerRole.current === 'navigator';
   const ranking = choiceNumber + 1;
   const textRef = useRef<TextInput>(null);
@@ -45,7 +65,7 @@ const NavigatorGameItem = ({ choiceNumber, isSetup, swap }: ListItmProps) => {
           </View>
         )}
         <AppTextInput
-          ref={textRef}
+          ref={textRef} // supposed to be for the "automatically enable cursor feature when pressing the "edit" icon in setup - might remove"
           prefixIcon={() =>
             isNavigator ? (
               <Feather name="star" size={24} color="white" />
@@ -56,9 +76,9 @@ const NavigatorGameItem = ({ choiceNumber, isSetup, swap }: ListItmProps) => {
               </AppText>
             )
           }
-          classes="w-[258px]"
+          classes={`w-[258px] ${isEliminated && 'opacity-40'}`}
           textClasses="text-md"
-          value={globalGameConfig?.candidates?.[choiceNumber]}
+          value={val ?? globalGameConfig?.candidates?.[choiceNumber]} // "val" is just the explicit value for the game loop
           multiline
           readOnly={!canEdit || !isNavigator}
           {...(isNavigator && {
@@ -80,7 +100,7 @@ const NavigatorGameItem = ({ choiceNumber, isSetup, swap }: ListItmProps) => {
                     setCanEdit(true);
                   }
                 : () => {
-                    console.log('TODO for crossing out an element');
+                    setCurrentlyCrossedItem?.(val);
                   }
             }>
             {isSetup ? (

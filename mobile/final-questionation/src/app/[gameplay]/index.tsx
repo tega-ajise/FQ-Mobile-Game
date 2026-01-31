@@ -1,4 +1,4 @@
-import { View, Button, Pressable, FlatList } from 'react-native';
+import { View, Pressable, FlatList } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import Step from '@/components/Step';
@@ -9,7 +9,7 @@ import { bgMapping } from '@/consts/theme';
 import AppText from '@/components/AppText';
 import CuratorGameItem from '@/components/setup/CuratorGameItem';
 import { SETUP_STEPS } from '@/consts/config';
-import { GameConfig } from '@/types/types';
+import { GameConfig, GameLoopState } from '@/types/types';
 import NavigatorGameItem from '@/components/setup/NavigatorGameItem';
 import { useAppContext } from '@/hooks/AppProvider';
 
@@ -17,7 +17,7 @@ const RoundOne = () => {
   const router = useRouter();
 
   const { globalGameConfig, setupCounts, updateGameConfig, playerRole } = useGameContext();
-  const { socket, gameState } = useAppContext();
+  const { socket, gameState, setGameState } = useAppContext();
 
   const stepIdx = gameState
     ? gameState.stepIdx < SETUP_STEPS.length
@@ -58,9 +58,18 @@ const RoundOne = () => {
   // UPDATE: remove updateGameConfig entirely --> deal with linting error later
   useEffect(() => {
     if (!gameState) return;
-    if (gameState.stepIdx >= SETUP_STEPS.length)
+    if (gameState.stepIdx >= SETUP_STEPS.length) {
+      const initLoopState: GameLoopState = {
+        lobbyName: globalGameConfig?.lobbyName,
+        roundQuestions: globalGameConfig?.roundQuestions ?? [],
+        candidates: Array.from(globalGameConfig?.candidates ?? [], (v) => ({
+          content: v,
+          isEliminated: false,
+        })),
+      };
       router.navigate(`/${(gameState as GameConfig)?.lobbyName}/game-loop`);
-    else updateGameConfig(gameState as GameConfig);
+      setGameState({ ...initLoopState, stepIdx: 0 });
+    } else updateGameConfig(gameState as GameConfig);
   }, [gameState, router, playerRole]);
 
   return (

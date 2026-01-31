@@ -17,3 +17,9 @@ export interface MongoDBLobbyModel extends BaseGameConfig {
   hostId: string;
   [metadata: string]: any;
 }
+
+export interface GameLoopState {
+  lobbyName?: string;
+  roundQuestions: string[];
+  candidates: { content: string; isEliminated: boolean }[];
+}

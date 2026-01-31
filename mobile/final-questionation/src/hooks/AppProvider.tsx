@@ -1,8 +1,7 @@
-import { GameConfig, LobbyDetails } from '@/types/types';
+import { GameConfig, GameLoopState, LobbyDetails } from '@/types/types';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-type GameLoopState = 'TODO';
 type TGameState = ((GameConfig | GameLoopState) & { stepIdx: number }) | undefined;
 
 interface AppContextType {
@@ -11,6 +10,7 @@ interface AppContextType {
   waitingForJoiner: boolean;
   setWaitingForJoiner: React.Dispatch<React.SetStateAction<boolean>>;
   gameState: TGameState;
+  setGameState: React.Dispatch<React.SetStateAction<TGameState>>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -43,9 +43,29 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
       setGameState(gs);
     });
 
+    socket.on('eliminateItem', (value: string) => {
+      setGameState((prev) => {
+        if (!prev) return prev;
+        const gs = prev as GameLoopState & { stepIdx: number };
+        if (!gs.candidates) return prev;
+        const newCandidates = gs.candidates.map((c) =>
+          c.content === value ? { ...c, isEliminated: true } : c
+        );
+
+        return {
+          ...gs,
+          candidates: newCandidates,
+          stepIdx:
+            prev.stepIdx + 1 !== prev.roundQuestions?.length ? prev.stepIdx + 1 : prev.stepIdx,
+        };
+      });
+    });
+
     return () => {
       socket.off('initLobbies');
       socket.off('lobbyAdded');
+      socket.off('nextStep');
+      socket.off('eliminateItem');
       socket.disconnect();
       socketRef.current = null;
     };
@@ -59,6 +79,7 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
         waitingForJoiner,
         setWaitingForJoiner,
         gameState,
+        setGameState,
       }}>
       {children}
     </AppContext.Provider>
