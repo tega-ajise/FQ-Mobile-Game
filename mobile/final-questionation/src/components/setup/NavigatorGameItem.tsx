@@ -1,4 +1,4 @@
-import { View, Pressable, TextInput } from 'react-native';
+import { View, Pressable, TextInput, TextProps } from 'react-native';
 import React, { useRef, useState } from 'react';
 import { bgMapping } from '@/consts/theme';
 import AppTextInput from '../AppTextInput';
@@ -14,6 +14,7 @@ interface ListItmProps {
   isSetup?: boolean;
   swap?: (offset: number) => void;
   crossedItemState?: [string | undefined, React.Dispatch<React.SetStateAction<string | undefined>>];
+  textBoxProps?: TextProps;
 }
 
 const NavigatorGameItem = ({
@@ -22,6 +23,7 @@ const NavigatorGameItem = ({
   swap,
   val,
   crossedItemState,
+  textBoxProps,
 }: ListItmProps) => {
   const { globalGameConfig, updateGameConfig, playerRole } = useGameContext();
   const { gameState } = useAppContext();
@@ -88,6 +90,7 @@ const NavigatorGameItem = ({
               updateGameConfig({ candidates: prevCandidates });
             },
             onBlur: () => setCanEdit(false),
+            ...textBoxProps,
           })}
         />
         {isNavigator && (
