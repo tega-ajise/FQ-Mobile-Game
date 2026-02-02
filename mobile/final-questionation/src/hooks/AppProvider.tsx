@@ -11,6 +11,9 @@ interface AppContextType {
   setWaitingForJoiner: React.Dispatch<React.SetStateAction<boolean>>;
   gameState: TGameState;
   setGameState: React.Dispatch<React.SetStateAction<TGameState>>;
+  resultState: { position: number; question: string }[] | undefined;
+  isGameOver: boolean;
+  setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -19,6 +22,8 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [waitingForJoiner, setWaitingForJoiner] = useState<boolean>(true);
   const [lobbies, setLobbies] = useState<LobbyDetails[]>([]);
   const [gameState, setGameState] = useState<TGameState>();
+  const [resultState, setResultState] = useState<{ position: number; question: string }[]>();
+  const [isGameOver, setIsGameOver] = useState<boolean>(false);
 
   const socketRef = useRef<Socket | null>(null);
 
@@ -61,15 +66,36 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
       });
     });
 
+    socket.on('showResults', (value: string) => {
+      setIsGameOver(true);
+      setResultState((prev) => {
+        const finalResult = prev?.filter((val) => val.question === value);
+        return finalResult;
+      });
+    });
+
     return () => {
       socket.off('initLobbies');
       socket.off('lobbyAdded');
       socket.off('nextStep');
       socket.off('eliminateItem');
+      socket.off('showResults');
       socket.disconnect();
       socketRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    setResultState(() => {
+      if ((gameState as GameLoopState)?.candidates?.[0]?.content) {
+        return (gameState as GameLoopState)?.candidates?.map((val, idx) => ({
+          position: idx,
+          question: val.content,
+        }));
+      }
+      return undefined;
+    });
+  }, [gameState]);
 
   return (
     <AppContext.Provider
@@ -80,6 +106,9 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
         setWaitingForJoiner,
         gameState,
         setGameState,
+        resultState,
+        isGameOver,
+        setIsGameOver,
       }}>
       {children}
     </AppContext.Provider>

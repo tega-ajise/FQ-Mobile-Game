@@ -130,7 +130,7 @@ const RoundOne = () => {
               prefixIcon={() => <Feather name="star" size={24} color="white" />}
               classes="w-[310px] h-[81px]"
             />
-            <AppText className="text-2xl text-secondary">{`Round ${globalGameConfig.candidates?.length ?? 0}/${setupCounts.numberOfCandidates}`}</AppText>
+            <AppText className="text-2xl text-secondary">{`Candidate ${globalGameConfig.candidates?.length ?? 0}/${setupCounts.numberOfCandidates}`}</AppText>
             <View className="absolute -right-[55px] top-[17%]">
               <Pressable
                 className={`h-[40px] w-[40px] rounded-full ${bgMapping.primary} active:shadow-none`}

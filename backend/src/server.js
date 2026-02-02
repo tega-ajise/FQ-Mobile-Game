@@ -72,4 +72,19 @@ io.on("connection", (socket) => {
     const room = lobbyName;
     io.to(room).emit("eliminateItem", value);
   });
+
+  socket.on("showResults", async (endGameState, callback) => {
+    const { lobbyName, value } = endGameState;
+    const room = lobbyName;
+    io.to(room).emit("showResults", value);
+    try {
+      const lobby = await Lobby.deleteOne({ lobbyName });
+      // io.in(room).disconnectSockets();
+      console.log("Finished game " + lobby.acknowledged);
+      callback({ ok: true });
+    } catch (e) {
+      console.error(e);
+      callback({ ok: false });
+    }
+  });
 });

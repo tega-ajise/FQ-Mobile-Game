@@ -26,7 +26,7 @@ const NavigatorGameItem = ({
   textBoxProps,
 }: ListItmProps) => {
   const { globalGameConfig, updateGameConfig, playerRole } = useGameContext();
-  const { gameState } = useAppContext();
+  const { gameState, isGameOver } = useAppContext();
 
   const [canEdit, setCanEdit] = useState(false);
   const [currentlyCrossedItem, setCurrentlyCrossedItem] = crossedItemState || [null, null]; // for navigator in game loop, to handle changes for selecting items to eliminate
@@ -37,7 +37,7 @@ const NavigatorGameItem = ({
   const isEliminated = currentItemData?.isEliminated || hasCrossedOut;
 
   /** For setup */
-  const isNavigator = playerRole.current === 'navigator';
+  const isNavigator = playerRole.current === 'navigator' && !isGameOver;
   const ranking = choiceNumber + 1;
   const textRef = useRef<TextInput>(null);
 
