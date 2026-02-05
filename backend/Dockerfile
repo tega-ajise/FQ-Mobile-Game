@@ -1,12 +1,19 @@
-FROM node:22.19.0
+FROM node:22-slim
+
+RUN mkdir -p /app
+WORKDIR /app
 
 # Can get environment variables using docker inspect
 ENV test=Hello\ World
+
 # best to put the installation commands first, docker has effective caching
 # Copy dependencies first
-COPY package.json .
+COPY package.json package-lock.json ./
 
-RUN npm install
+# RUN npm install, but ci stands for continous integration
+# Instructed to omit devDependencies
+RUN npm ci --omit=dev 
+
 # THEN copy all project files
 COPY . .
 
