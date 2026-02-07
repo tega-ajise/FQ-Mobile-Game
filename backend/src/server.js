@@ -8,17 +8,31 @@ import {
   offLoadAnyHostedLobbies,
 } from "./controllers/lobbyController.js";
 dotenv.config();
+import http from "http";
 
-// ws://localhost:8080 - notice how it is not an http server
+const server = http.createServer((req, res) => {
+  // simple server
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("Server ping");
+});
+
 // can either pass in a server object or the port number of the server you want instantiated
+// ws://localhost:8080 without
 // OR just the options, then listen to the port later
-const io = new Server({
+const io = new Server(server, {
   cors: {
     origin: "*",
   },
   connectionStateRecovery: {},
+  // path: "ec2-socket", - fallback is /socket.io for client
 });
-connectDB().then(() => io.listen(8080)); // want db connected THEN server starts
+connectDB().then(() =>
+  server.listen(8080, () => {
+    // ws://localhost:8080 - if it was not initialized with an http server
+    // this would be io.listen(8080, func) instead
+    console.log("Server listening at http://localhost:8080");
+  }),
+); // want db connected THEN server starts
 
 io.on("connection", (socket) => {
   const hostId = socket.id;

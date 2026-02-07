@@ -29,7 +29,8 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     // will have to put this link into the EXPO environment variables later
-    const socket = io('ws://localhost:8080', {
+    const socket = io('http://ec2-18-188-108-63.us-east-2.compute.amazonaws.com', {
+      path: '/socket.io', // (does this as default anyway)
       reconnectionDelayMax: 10000,
     });
     socketRef.current = socket;
