@@ -5,7 +5,7 @@ export const DEFAULT_ROUND_CONFIG: BaseGameConfig = {
   numberOfCandidates: 8,
 };
 
-export const SETUP_STEPS = [
+export const SETUP_STEPS: { step: string; role: 'navigator' | 'curator' }[] = [
   { step: 'Choose question', role: 'curator' },
   { step: 'Create candidates list', role: 'navigator' },
   { step: 'Rank candidates', role: 'curator' },

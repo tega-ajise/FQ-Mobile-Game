@@ -59,17 +59,19 @@ const RoundDeetsGoHere = () => {
         )}
       />
       <Pressable
-        className={`mx-auto mt-2 h-[70px] w-[240px] rounded-xl ${playerRole.current === 'navigator' ? bgMapping.primary : bgMapping.secondary} overflow-visible active:shadow-none`}
+        className={`mx-auto mt-2 h-[70px] w-[240px] rounded-xl ${playerRole.current === 'navigator' ? bgMapping.primary : bgMapping.secondary} overflow-visible active:shadow-none disabled:opacity-50`}
         onPress={
           playerRole.current === 'navigator'
             ? () => {
+                crossedItemState[1](''); // reset after every round
                 socket?.emit('eliminateItem', {
                   lobbyName: gameState?.lobbyName,
                   value: crossedItemState[0],
                 });
               }
             : showModal
-        }>
+        }
+        disabled={playerRole.current === 'navigator' && !crossedItemState[0]}>
         <View className="flex-1 flex-col justify-center">
           <View className="flex-row justify-center gap-2">
             {playerRole.current === 'navigator' && <Feather name="check" size={24} color="white" />}

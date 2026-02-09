@@ -1,4 +1,4 @@
-import { View, Pressable, FlatList } from 'react-native';
+import { View, Pressable, FlatList, Alert } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import Step from '@/components/Step';
@@ -89,6 +89,7 @@ const RoundOne = () => {
                 <Pressable
                   className={`h-[40px] w-[40px] rounded-full ${bgMapping.primary} active:shadow-none`}
                   onPress={() => {
+                    if (!stagedListItem) return Alert.alert('Invalid', 'Entry cannot be empty');
                     const currentQuestions = globalGameConfig.roundQuestions ?? [];
                     const newQuestions = [...currentQuestions, stagedListItem];
                     updateGameConfig({ roundQuestions: newQuestions });
@@ -122,7 +123,7 @@ const RoundOne = () => {
         <AppText className="m-4 text-center text-3xl text-accent">
           {globalGameConfig?.roundQuestions?.[0]}
         </AppText>
-        {(globalGameConfig.candidates ?? []).length <= setupCounts.numberOfCandidates && (
+        {(globalGameConfig.candidates ?? []).length < setupCounts.numberOfCandidates && (
           <View className="relative mr-16 flex flex-col items-end gap-2">
             <AppTextInput
               onChangeText={(txt) => setStagedListItem(txt)}
@@ -130,11 +131,18 @@ const RoundOne = () => {
               prefixIcon={() => <Feather name="star" size={24} color="white" />}
               classes="w-[310px] h-[81px]"
             />
-            <AppText className="text-2xl text-secondary">{`Candidate ${globalGameConfig.candidates?.length ?? 0}/${setupCounts.numberOfCandidates}`}</AppText>
+            <AppText className="text-2xl text-secondary">{`Candidate ${(globalGameConfig.candidates?.length ?? 0) + 1}/${setupCounts.numberOfCandidates}`}</AppText>
             <View className="absolute -right-[55px] top-[17%]">
               <Pressable
                 className={`h-[40px] w-[40px] rounded-full ${bgMapping.primary} active:shadow-none`}
                 onPress={() => {
+                  if (
+                    globalGameConfig.candidates?.find(
+                      (existingCandidate) => existingCandidate === stagedListItem
+                    )
+                  )
+                    return Alert.alert('Candidate already added', 'Please add a different one');
+                  if (!stagedListItem) return Alert.alert('Invalid', 'Entry cannot be empty');
                   const currentCandidates = globalGameConfig.candidates ?? [];
                   const newCandidates = [...currentCandidates, stagedListItem];
                   updateGameConfig({ candidates: newCandidates });

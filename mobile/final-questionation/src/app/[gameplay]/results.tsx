@@ -27,6 +27,7 @@ const Results = () => {
 
   const FINAL_ROUND = gameState?.stepIdx ?? (gameState?.roundQuestions ?? []).length - 1; // this value should be the last index of the round questions (3 in my test examples)
 
+  console.log(resultState);
   if (isGameOver)
     return (
       <View className="flex-1 bg-background p-6">

@@ -17,7 +17,7 @@ const ThemedNavigateButton = ({ text, route, style, icon, onClick, disabled = fa
   return (
     <Link asChild href={route}>
       <Pressable
-        className={`m-auto h-[75px] w-[315px] rounded-xl ${bgMapping[style]} active:shadow-none`}
+        className={`m-auto h-[75px] w-[315px] rounded-xl ${bgMapping[style]} active:shadow-none disabled:opacity-50`}
         disabled={disabled}
         onPress={onClick}>
         <View className="flex-1 flex-col justify-center">

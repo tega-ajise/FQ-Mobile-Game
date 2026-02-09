@@ -15,7 +15,7 @@ const Setup = () => {
     useGameContext();
   const { socket } = useAppContext();
   const router = useRouter();
-  const [selectedRole, setSelectedRole] = useState<string>(playerRole.current ?? 'navigator'); // just for the visual change (the useRef in the provider stores the change under the hood)
+  const [selectedRole, setSelectedRole] = useState<string>(playerRole.current); // just for the visual change (the useRef in the provider stores the change under the hood)
 
   async function createLobby() {
     const res = await socket?.emitWithAck('newRoom', {
@@ -92,7 +92,7 @@ const Setup = () => {
         route={{ pathname: '/[gameplay]', params: { gameplay: globalGameConfig?.lobbyName ?? '' } }}
         style="primary"
         onClick={createLobby}
-        disabled={!globalGameConfig.lobbyName || !playerRole}
+        disabled={!globalGameConfig.lobbyName || !playerRole.current}
       />
     </View>
   );
