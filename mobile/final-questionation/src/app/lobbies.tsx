@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Link, useRouter } from 'expo-router';
 import { Entypo } from '@expo/vector-icons';
 import { useAppContext } from '@/hooks/AppProvider';
-import WaitingScreen from '@/components/WaitingScreen';
 import AppText from '@/components/AppText';
 import AppTextInput from '@/components/AppTextInput';
 import { useGameContext } from '@/hooks/GameProvider';
@@ -90,7 +89,9 @@ const Lobbies = () => {
             );
           }}
           ItemSeparatorComponent={() => <View className="h-4" />}
-          ListEmptyComponent={<WaitingScreen isLobbyScreen />}
+          ListEmptyComponent={
+            <AppText className="m-auto text-primary">Create New Lobby Now!</AppText>
+          }
         />
       </View>
     </View>

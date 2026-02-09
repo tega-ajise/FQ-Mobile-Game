@@ -1,4 +1,13 @@
-import { View, FlatList, Pressable, GestureResponderEvent } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Alert,
+  Modal,
+  Dimensions,
+} from 'react-native';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
 import AppTextInput from '@/components/AppTextInput';
@@ -19,7 +28,7 @@ const RoundDeetsGoHere = () => {
   const { playerRole } = useGameContext();
   const { gameState, socket } = useAppContext();
   const crossedItemState = useState<string | undefined>(undefined);
-
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const currentRound = gameState?.stepIdx ?? 0;
 
   const candidatesData = useMemo(
@@ -30,9 +39,6 @@ const RoundDeetsGoHere = () => {
     [gameState, playerRole]
   );
 
-  function showModal(event: GestureResponderEvent): void {
-    throw new Error('Function not implemented.');
-  }
   // MEANS WE MOVE ON TO FINAL QUESTIONATION
   if (currentRound === (gameState?.roundQuestions ?? [])?.length - 1) {
     return <Redirect href={`/${gameState?.lobbyName}/results`} />;
@@ -40,6 +46,33 @@ const RoundDeetsGoHere = () => {
 
   return (
     <View className="flex-1 bg-background p-6">
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setIsModalVisible(!isModalVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <FlatList
+              data={gameState?.roundQuestions}
+              renderItem={({ item, index }) => (
+                <Text>
+                  {`Round ${index}: ${item}`}
+                  {index === currentRound && ' (Current Round)'}
+                </Text>
+              )}
+            />
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setIsModalVisible(false)}>
+              <Text style={styles.textStyle}>Hide Modal</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
       <AppTextInput
         value={gameState?.roundQuestions?.[currentRound] ?? ''}
         prefixIcon={() => <FontAwesome5 name="question" size={24} color="white" />}
@@ -69,7 +102,7 @@ const RoundDeetsGoHere = () => {
                   value: crossedItemState[0],
                 });
               }
-            : showModal
+            : () => setIsModalVisible(true)
         }
         disabled={playerRole.current === 'navigator' && !crossedItemState[0]}>
         <View className="flex-1 flex-col justify-center">
@@ -85,5 +118,47 @@ const RoundDeetsGoHere = () => {
     </View>
   );
 };
+
+const { height: screenHeight } = Dimensions.get('window');
+const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    height: screenHeight / 2,
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+});
 
 export default RoundDeetsGoHere;

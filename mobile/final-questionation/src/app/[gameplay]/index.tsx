@@ -68,7 +68,7 @@ const RoundOne = () => {
         })),
       };
       router.navigate(`/${(gameState as GameConfig)?.lobbyName}/game-loop`);
-      setGameState({ ...initLoopState, stepIdx: 0 });
+      setGameState({ ...initLoopState, stepIdx: 1 }); // ensure we don't re-ask the round 0 question
     } else updateGameConfig(gameState as GameConfig);
   }, [gameState, router, playerRole]);
 

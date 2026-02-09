@@ -1,7 +1,7 @@
 import { Button, Pressable, View, Dimensions } from 'react-native';
 import React from 'react';
 import { useGameContext } from '@/hooks/GameProvider';
-import WaitingScreen from './WaitingScreen';
+import FullScreenElasticLoader from './FullScreenLoader';
 import { bgMapping } from '@/consts/theme';
 import { Feather } from '@expo/vector-icons';
 import AppText from './AppText';
@@ -37,8 +37,7 @@ const Step = ({ currentStep, step, children, changeStep }: StepProps) => {
   if (playerRole.current !== currentStep.role) {
     return (
       <View>
-        <WaitingScreen />
-        <Button title="Next step" onPress={changeStep} />
+        <FullScreenElasticLoader visible message="Waiting for other player..." />
       </View>
     );
   }
