@@ -9,7 +9,7 @@ import { useGameContext } from '@/hooks/GameProvider';
 import { MongoDBLobbyModel } from '@/types/types';
 
 const Lobbies = () => {
-  const { lobbies, socket } = useAppContext();
+  const { lobbies, socket, setWaitingForJoiner } = useAppContext();
   const { playerRole, setSetupCounts, updateGameConfig } = useGameContext();
   const router = useRouter();
 
@@ -17,7 +17,8 @@ const Lobbies = () => {
 
   const lobbyEntryValidation = (selectedLobby?: string) => {
     const lobby =
-      lobbies.find((lby) => lby.lobbyName === manualLobbyEntry)?.lobbyName ?? selectedLobby;
+      lobbies.find((lby) => lby.lobbyName.toLowerCase() === manualLobbyEntry.toLowerCase())
+        ?.lobbyName ?? selectedLobby;
     if (!lobby && !selectedLobby) {
       return Alert.alert('Lobby not found', 'Please try another lobby name');
     }
@@ -30,6 +31,7 @@ const Lobbies = () => {
         playerRole.current = newJoinerRole;
         setSetupCounts({ numberOfCandidates, numberOfQuestions });
         updateGameConfig({ lobbyName });
+        setWaitingForJoiner(false);
 
         router.push({ pathname: '/[gameplay]', params: { gameplay: lobby } });
       })
@@ -44,7 +46,7 @@ const Lobbies = () => {
           <AppTextInput
             value={manualLobbyEntry}
             onChangeText={(txt) => setManualLobbyEntry(txt)}
-            className="h-[73px] w-[280px]"
+            classes="h-[73px] w-[280px]"
           />
           <Pressable
             className="h-[55px] w-[66px] rounded-2xl bg-btnprimary shadow-[0px_4.6px_0px_rgba(40,118,40,1)]"
@@ -88,7 +90,7 @@ const Lobbies = () => {
               </View>
             );
           }}
-          ItemSeparatorComponent={() => <View className="h-4" />}
+          ItemSeparatorComponent={() => <View className="mt-4" />}
           ListEmptyComponent={
             <AppText className="m-auto text-primary">Create New Lobby Now!</AppText>
           }

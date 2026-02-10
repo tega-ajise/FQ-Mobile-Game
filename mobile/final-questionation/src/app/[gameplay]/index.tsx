@@ -12,12 +12,13 @@ import { SETUP_STEPS } from '@/consts/config';
 import { GameConfig, GameLoopState } from '@/types/types';
 import NavigatorGameItem from '@/components/setup/NavigatorGameItem';
 import { useAppContext } from '@/hooks/AppProvider';
+import FullScreenElasticLoader from '@/components/FullScreenLoader';
 
 const RoundOne = () => {
   const router = useRouter();
 
   const { globalGameConfig, setupCounts, updateGameConfig, playerRole } = useGameContext();
-  const { socket, gameState, setGameState } = useAppContext();
+  const { socket, gameState, setGameState, waitingForJoiner } = useAppContext();
 
   const stepIdx = gameState
     ? gameState.stepIdx < SETUP_STEPS.length
@@ -71,6 +72,13 @@ const RoundOne = () => {
       setGameState({ ...initLoopState, stepIdx: 1 }); // ensure we don't re-ask the round 0 question
     } else updateGameConfig(gameState as GameConfig);
   }, [gameState, router, playerRole]);
+
+  if (waitingForJoiner)
+    return (
+      <View className="flex-1 bg-background">
+        <FullScreenElasticLoader message="Waiting for another player to join!" visible />
+      </View>
+    );
 
   return (
     <View className="size-full bg-background p-2">

@@ -18,7 +18,6 @@ export default function ElasticBarLoader({
   style,
 }: Props) {
   const t = useRef(new Animated.Value(0)).current;
-
   useEffect(() => {
     const anim = Animated.loop(
       Animated.sequence([

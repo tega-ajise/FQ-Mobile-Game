@@ -25,12 +25,23 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tegaajise.finalquestionation",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "package": "com.tegaajise.finalquestionation"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e37fe8c6-a218-4bbf-857b-3ce92da45ffd"
       }
     }
   }

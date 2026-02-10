@@ -1,5 +1,5 @@
 import { Pressable, View, Dimensions } from 'react-native';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useGameContext } from '@/hooks/GameProvider';
 import FullScreenElasticLoader from './FullScreenLoader';
 import { bgMapping } from '@/consts/theme';
@@ -17,8 +17,9 @@ const Step = ({ currentStep, step, children, changeStep }: StepProps) => {
   const screenHeight = Dimensions.get('window').height;
 
   const { playerRole, globalGameConfig, setupCounts } = useGameContext();
+
   const stepToCheck = !Array.isArray(step) ? [step] : step;
-  const isValidGameConfig = () => {
+  const isValidGameConfig = useCallback(() => {
     const { candidates, roundQuestions } = globalGameConfig;
     const { numberOfCandidates, numberOfQuestions } = setupCounts;
     const uniqueList = new Set(currentStep.role === 'navigator' ? candidates : roundQuestions);
@@ -28,18 +29,15 @@ const Step = ({ currentStep, step, children, changeStep }: StepProps) => {
         : uniqueList.size === roundQuestions?.length &&
           roundQuestions.length === numberOfQuestions + 1; // +1 to account for round 0
     return isReturnValid && Array.from(uniqueList.values()).every((v) => v);
-  };
+  }, [globalGameConfig, setupCounts, currentStep]);
 
   // ensures that the other steps don't render
   if (!stepToCheck.includes(currentStep.step)) return null;
 
   // checks that once on the current step, is the role is appropriate for the step
   if (playerRole.current !== currentStep.role) {
-    return (
-      <View>
-        <FullScreenElasticLoader visible message="Waiting for other player..." />
-      </View>
-    );
+    const otherRole = playerRole.current === 'navigator' ? 'The Curator' : 'The Navigator';
+    return <FullScreenElasticLoader visible message={`Waiting for ${otherRole}'s turn...`} />;
   }
 
   // otherwise your content is rendered

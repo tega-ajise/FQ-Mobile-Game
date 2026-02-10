@@ -5,4 +5,4 @@ package-lock.json
 # Ignore all environment files
 .env
 
-.DS_STORE
+.DS_Store

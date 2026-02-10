@@ -1,4 +1,3 @@
-// FullScreenElasticLoader.tsx
 import React from 'react';
 import { Modal, StyleSheet, Text, View } from 'react-native';
 import ElasticBarLoader from './ElasticLoader';

@@ -1,5 +1,5 @@
 import { LuckiestGuy_400Regular, useFonts } from '@expo-google-fonts/luckiest-guy';
-import { SplashScreen, Stack, useGlobalSearchParams } from 'expo-router';
+import { Stack, useGlobalSearchParams } from 'expo-router';
 import '../../global.css';
 import SafeScreen from '@/components/SafeScreen';
 import GameProvider from '@/hooks/GameProvider';
@@ -24,8 +24,6 @@ export default function RootLayout() {
   });
 
   if (!fontLoaded) return null;
-
-  SplashScreen.hideAsync();
 
   return (
     <AppProvider>

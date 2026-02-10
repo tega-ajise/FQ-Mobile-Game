@@ -45,7 +45,6 @@ io.on("connection", (socket) => {
   socket.on("disconnect", async () => {
     const deletedLobbies = await offLoadAnyHostedLobbies(hostId);
     console.log("user disconnected. Total deleted lobbies: " + deletedLobbies);
-    // io.in("room_name").disconnectSockets()
   });
 
   socket.on("newRoom", async (gameConfig, callback) => {
@@ -54,7 +53,7 @@ io.on("connection", (socket) => {
     callback({ ok: !!res }); // need to do proper error handling in case room can't be created for whatever reason
 
     if (!res) return;
-    io.emit("lobbyAdded", res);
+    io.emit("lobbyChange", res);
     console.log(`Room created with name ${gameConfig.lobbyName}`);
   });
 
@@ -63,6 +62,13 @@ io.on("connection", (socket) => {
       // fetch the lobby details
       const lobbyDetails = await Lobby.findOne({ lobbyName });
       socket.join(lobbyName);
+      // ensures other users can no longer see this lobby when full
+      // also notifies other room member that game can commence
+      socket.broadcast.emit("lobbyChange", {
+        lobbyName,
+        newJoinerRole: lobbyDetails.newJoinerRole,
+        status: "ok",
+      });
       callback(lobbyDetails);
     } catch (error) {
       console.error(error);

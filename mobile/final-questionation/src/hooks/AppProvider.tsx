@@ -43,9 +43,19 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     // seems like can only handle incoming events in the AppContext
-    socket.on('lobbyAdded', (newLobby: LobbyDetails) => {
+    socket.on('lobbyChange', (lobbyStatus: LobbyDetails & { status?: 'ok' }) => {
       console.log('Refreshing lobbies.');
-      setLobbies((prev) => [...prev, newLobby]);
+
+      // means room has been completed
+      if (lobbyStatus.status && lobbyStatus.status === 'ok') {
+        setLobbies((prev) => {
+          const lobbyIdx = prev.findIndex((lby) => lby.lobbyName === lobbyStatus.lobbyName);
+          return prev.toSpliced(lobbyIdx, 1); // ensures that only active lobbies are shown in the lobby list
+        });
+        setWaitingForJoiner(false);
+      } else {
+        setLobbies((prev) => [...prev, lobbyStatus]);
+      }
     });
 
     socket.on('nextStep', (gs: TGameState) => {
@@ -80,7 +90,7 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
     return () => {
       socket.off('initLobbies');
-      socket.off('lobbyAdded');
+      socket.off('lobbyChange');
       socket.off('nextStep');
       socket.off('eliminateItem');
       socket.off('showResults');
