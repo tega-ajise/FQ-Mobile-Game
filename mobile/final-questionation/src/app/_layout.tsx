@@ -1,5 +1,5 @@
 import { LuckiestGuy_400Regular, useFonts } from '@expo-google-fonts/luckiest-guy';
-import { SplashScreen, Stack } from 'expo-router';
+import { SplashScreen, Stack, useGlobalSearchParams } from 'expo-router';
 import '../../global.css';
 import SafeScreen from '@/components/SafeScreen';
 import GameProvider from '@/hooks/GameProvider';
@@ -18,6 +18,7 @@ import AppProvider from '@/hooks/AppProvider';
   });
  */
 export default function RootLayout() {
+  const params = useGlobalSearchParams();
   const [fontLoaded] = useFonts({
     LuckiestGuy_400Regular,
   });
@@ -35,12 +36,21 @@ export default function RootLayout() {
               headerStyle: {
                 backgroundColor: '#1C0F04',
               },
+              headerBackButtonDisplayMode: 'minimal',
+              headerTitleStyle: {
+                color: 'white',
+                fontFamily: 'LuckiestGuy_400Regular',
+              },
             }}>
             {/** once the user clicks "start game", they should not be able to navigate back (pop the screen off the stack) */}
             {/** the gameplay navigator should "override" the root navigator – current solution, if there's a better one use that */}
             <Stack.Screen
               name="[gameplay]"
-              options={{ headerBackVisible: false, gestureEnabled: false }}
+              options={{
+                headerBackVisible: false,
+                gestureEnabled: false,
+                title: Array.isArray(params) ? params[0].gameplay : params.gameplay,
+              }}
             />
             <Stack.Screen name="index" options={{ headerShown: false }} />
           </Stack>

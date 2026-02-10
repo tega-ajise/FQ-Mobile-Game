@@ -1,4 +1,4 @@
-import { Button, Pressable, View, Dimensions } from 'react-native';
+import { Pressable, View, Dimensions } from 'react-native';
 import React from 'react';
 import { useGameContext } from '@/hooks/GameProvider';
 import FullScreenElasticLoader from './FullScreenLoader';
