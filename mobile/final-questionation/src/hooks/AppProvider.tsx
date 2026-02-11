@@ -1,6 +1,7 @@
 import { GameConfig, GameLoopState, LobbyDetails } from '@/types/types';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
+import Constants from 'expo-constants';
 
 type TGameState = ((GameConfig | GameLoopState) & { stepIdx: number }) | undefined;
 
@@ -28,12 +29,9 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    // will have to put this link into the EXPO environment variables later
-    // const socket = io('http://ec2-18-188-108-63.us-east-2.compute.amazonaws.com', {
-    //   path: '/socket.io', // (does this as default anyway)
-    //   reconnectionDelayMax: 10000,
-    // });
-    const socket = io('http://localhost:8080', {
+    const url = Constants?.expoConfig?.extra?.EXPO_PUBLIC_URL;
+    console.log('Socket URL: ' + url);
+    const socket = io(url, {
       reconnectionDelayMax: 10000,
     });
     socketRef.current = socket;
