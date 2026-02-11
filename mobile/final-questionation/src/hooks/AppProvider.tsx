@@ -30,11 +30,24 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const url = Constants?.expoConfig?.extra?.EXPO_PUBLIC_URL;
-    console.log('Socket URL: ' + url);
+
     const socket = io(url, {
       reconnectionDelayMax: 10000,
+      transports: ['websocket'], // just for verifying server connection - REMOVE
+      upgrade: false, // just for verifying server connection - DO NOT KEEP THIS
     });
     socketRef.current = socket;
+
+    socket.on('connect_error', (err) => {
+      // the reason of the error, for example "xhr poll error"
+      console.log(err.message);
+
+      // some additional description, for example the status code of the initial HTTP response
+      console.log(err.description);
+
+      // some additional context, for example the XMLHttpRequest object
+      console.log(err.context);
+    });
 
     socket.on('initLobbies', (allLobbies: LobbyDetails[]) => {
       setLobbies(allLobbies);
