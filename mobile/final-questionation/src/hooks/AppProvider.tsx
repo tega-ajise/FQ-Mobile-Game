@@ -1,7 +1,6 @@
 import { GameConfig, GameLoopState, LobbyDetails } from '@/types/types';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-import Constants from 'expo-constants';
 
 type TGameState = ((GameConfig | GameLoopState) & { stepIdx: number }) | undefined;
 
@@ -29,9 +28,9 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    const url = Constants?.expoConfig?.extra?.EXPO_PUBLIC_URL;
+    const socket_url = 'https://ai-copilot.app';
 
-    const socket = io(url, {
+    const socket = io(socket_url, {
       reconnectionDelayMax: 10000,
     });
     socketRef.current = socket;
