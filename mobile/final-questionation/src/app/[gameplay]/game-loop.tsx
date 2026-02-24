@@ -76,7 +76,8 @@ const RoundDeetsGoHere = () => {
       <AppTextInput
         value={gameState?.roundQuestions?.[currentRound] ?? ''}
         prefixIcon={() => <FontAwesome5 name="question" size={24} color="white" />}
-        classes="w-[310px] h-[81px] mx-auto"
+        classes="w-[310px] h-auto mx-auto"
+        multiline
       />
       <View className="my-8 w-full border border-t-primary" />
       <FlatList

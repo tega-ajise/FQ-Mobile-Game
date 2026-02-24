@@ -34,7 +34,8 @@ const Results = () => {
           <AppTextInput
             value={gameState?.roundQuestions?.[FINAL_ROUND] ?? ''}
             prefixIcon={() => <FontAwesome5 name="question" size={24} color="white" />}
-            classes="w-[310px] h-[81px] mx-auto"
+            classes="w-[310px] h-auto mx-auto"
+            multiline
           />
           <AppText className="text-2xl text-accent">Final Questionation</AppText>
         </View>
@@ -43,12 +44,7 @@ const Results = () => {
           choiceNumber={resultState?.[0]?.position ?? -1}
           val={resultState?.[0]?.question}
         />
-        <ThemedNavigateButton
-          style="primary"
-          text="Return Home"
-          route="/"
-          onClick={() => window.location.reload()} // just to re-render (so lobby doesn't appear on home screen anymore)
-        />
+        <ThemedNavigateButton style="primary" text="Return Home" route="/" />
       </View>
     );
 
@@ -58,7 +54,8 @@ const Results = () => {
         <AppTextInput
           value={gameState?.roundQuestions?.[FINAL_ROUND] ?? ''}
           prefixIcon={() => <FontAwesome5 name="question" size={24} color="white" />}
-          classes="w-[310px] h-[81px] mx-auto"
+          classes="w-[310px] h-auto mx-auto"
+          multiline
         />
         <AppText className="text-2xl text-accent">Final Questionation</AppText>
       </View>
@@ -81,7 +78,7 @@ const Results = () => {
       />
       {playerRole.current === 'navigator' && (
         <Pressable
-          className={`mx-auto mt-2 h-[70px] w-[240px] rounded-xl ${bgMapping.primary} overflow-visible active:shadow-none`}
+          className={`mx-auto mt-2 h-[70px] w-[240px] rounded-xl ${bgMapping.primary} overflow-visible active:shadow-none disabled:opacity-50`}
           onPress={() => {
             socket
               ?.emitWithAck('showResults', {
@@ -91,14 +88,12 @@ const Results = () => {
               .then((res) => {
                 if (!res.ok) throw new Error('What happened at the end blud');
               });
-          }}>
+          }}
+          disabled={!spotlightedItem}>
           <View className="flex-1 flex-col justify-center">
             <View className="flex-row justify-center gap-2">
               <Feather name="check" size={24} color="white" />
-              <AppText
-                className={`text-center text-primary ${playerRole.current === 'navigator' ? 'text-4xl' : 'text-2xl'}`}>
-                Submit
-              </AppText>
+              <AppText className={'text-center text-4xl text-primary'}>Submit</AppText>
             </View>
           </View>
         </Pressable>
