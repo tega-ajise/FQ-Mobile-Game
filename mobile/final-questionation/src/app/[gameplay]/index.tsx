@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import Step from '@/components/Step';
 import { useGameContext } from '@/hooks/GameProvider';
 import AppTextInput from '@/components/AppTextInput';
-import { Feather, FontAwesome5 } from '@expo/vector-icons';
+import { Feather, FontAwesome5, Foundation } from '@expo/vector-icons';
 import { bgMapping } from '@/consts/theme';
 import AppText from '@/components/AppText';
 import CuratorGameItem from '@/components/setup/CuratorGameItem';
@@ -13,6 +13,7 @@ import { GameConfig, GameLoopState } from '@/types/types';
 import NavigatorGameItem from '@/components/setup/NavigatorGameItem';
 import { useAppContext } from '@/hooks/AppProvider';
 import FullScreenElasticLoader from '@/components/FullScreenLoader';
+import { phoneAFriend } from '@/utils/api';
 
 const RoundOne = () => {
   const router = useRouter();
@@ -50,6 +51,27 @@ const RoundOne = () => {
     },
     [globalGameConfig, updateGameConfig]
   );
+
+  const handlePhoneAFriend = useCallback(async () => {
+    setStagedListItem('');
+
+    const abort = await phoneAFriend(
+      globalGameConfig?.roundQuestions,
+      // onChunk — called with each new piece of text
+      (chunk) => {
+        setStagedListItem((prev) => prev + chunk);
+      },
+      // onDone — called when stream is complete
+      (fullText) => {
+        console.log('Full response:', fullText);
+      },
+      // onError
+      (error) => {
+        console.error(error);
+        abort();
+      }
+    );
+  }, [globalGameConfig]);
 
   // 1) only gameState can trigger this useEffect (reason for !gameState upon initial render leading to return)
   // when gameState triggers it, it updates gameConfig, so other player can see candidate/question updates
@@ -89,6 +111,12 @@ const RoundOne = () => {
                 classes="w-[310px] h-[81px]"
               />
               <AppText className="text-2xl text-secondary">{`Round ${globalGameConfig.roundQuestions?.length ?? 0}/${setupCounts.numberOfQuestions}`}</AppText>
+              <Pressable onPress={handlePhoneAFriend} className="mx-auto bg-accent">
+                <AppText className="text-primary">
+                  <Foundation name="lightbulb" size={24} color="white" />
+                  Help me I can&apos;t think
+                </AppText>
+              </Pressable>
               <View className="absolute -right-[55px] top-[17%]">
                 <Pressable
                   className={`h-[40px] w-[40px] rounded-full ${bgMapping.primary} active:shadow-none`}
