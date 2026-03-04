@@ -278,13 +278,15 @@ Now given the final questionation, The Curator will:
         <Text className="text-lg text-primary">
           0) What would people call you if they forgot your name?
         </Text>
-        <Text className="text-lg text-primary">1) Which would you name your dog?</Text>
-        <Text className="text-lg text-primary">2) Which name is most unisex?</Text>
-        <Text className="text-lg text-primary">3) Which would show up in the dictionary?</Text>
+        <Text className="text-lg text-primary">
+          1) What is an appropriate way to address your dog?
+        </Text>
+        <Text className="text-lg text-primary">2) What is the most unisex name?</Text>
+        <Text className="text-lg text-primary">3) What name would show up in the dictionary?</Text>
         <Text className="text-lg text-primary">
           4) What is an excellent substitute teacher name?
         </Text>
-        <Text className="text-lg text-primary">5) Which one has the most rhyme potential?</Text>
+        <Text className="text-lg text-primary">5) What title has the most rhyme potential?</Text>
       </View>,
     ],
   },
