@@ -1,23 +1,25 @@
 import AppText from '@/components/AppText';
 import { INSTRUCTIONS } from '@/consts/config';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { View, Dimensions, FlatList, Text } from 'react-native';
 
 const { height } = Dimensions.get('window');
 
-const DescriptionContent = ({ paragraphs }: { paragraphs: string[] }) => (
+const DescriptionContent = ({ content }: { content: ReactElement[] }) => (
   <FlatList
-    data={paragraphs}
-    renderItem={({ item }) => <Text className="text-center text-xl text-primary">{item}</Text>}
+    data={content}
+    className="w-full"
+    keyExtractor={(_, idx) => idx.toString()}
+    renderItem={({ item }) => (typeof item === 'string' ? <Text>{item}</Text> : item)}
     ItemSeparatorComponent={() => <View className="mx-0 my-4 w-full" />}
   />
 );
 
 const VerticalFlatListPagination = () => {
-  const renderItem = ({ item }: { item: { step: string; data: string[] } }) => (
+  const renderItem = ({ item }: { item: { step: string; data: ReactElement[] } }) => (
     <View style={{ height }} className="items-center bg-background">
       <AppText className="mb-4 text-4xl text-primary">{item.step}</AppText>
-      <DescriptionContent paragraphs={item.data} />
+      <DescriptionContent content={item.data} />
     </View>
   );
 

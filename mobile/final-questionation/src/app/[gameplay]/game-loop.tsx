@@ -45,7 +45,7 @@ const RoundDeetsGoHere = () => {
   }
 
   return (
-    <View className="flex-1 bg-background p-6">
+    <View className="p-6">
       <Modal
         animationType="slide"
         transparent={true}

@@ -74,14 +74,10 @@ const RoundOne = () => {
   }, [gameState, router, playerRole]);
 
   if (waitingForJoiner)
-    return (
-      <View className="flex-1 bg-background">
-        <FullScreenElasticLoader message="Waiting for another player to join!" visible />
-      </View>
-    );
+    return <FullScreenElasticLoader message="Waiting for another player to join!" visible />;
 
   return (
-    <View className="size-full bg-background p-2">
+    <View className="size-full p-2">
       <Step step="Choose question" currentStep={SETUP_STEPS[stepIdx]} changeStep={changeStepActive}>
         <>
           {(globalGameConfig.roundQuestions ?? []).length <= setupCounts.numberOfQuestions && (

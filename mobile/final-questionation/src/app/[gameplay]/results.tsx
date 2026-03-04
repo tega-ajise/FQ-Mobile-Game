@@ -7,13 +7,14 @@ import AppText from '@/components/AppText';
 import NavigatorGameItem from '@/components/setup/NavigatorGameItem';
 import { useGameContext } from '@/hooks/GameProvider';
 import { shuffle } from '@/utils/arrShuffling';
-import { GameLoopState } from '@/types/types';
+import { GameConfig, GameLoopState } from '@/types/types';
 import { bgMapping } from '@/consts/theme';
 import ThemedNavigateButton from '@/components/ThemedNavigateButton';
 
 const Results = () => {
-  const { gameState, socket, resultState, isGameOver } = useAppContext();
-  const { playerRole } = useGameContext();
+  const { gameState, socket, resultState, isGameOver, setGameState, setIsGameOver } =
+    useAppContext();
+  const { playerRole, setSetupCounts, updateGameConfig, globalGameConfig } = useGameContext();
 
   const [spotlightedItem, setSpotlightedItem] = useState<string>('');
 
@@ -25,11 +26,27 @@ const Results = () => {
     [gameState, playerRole]
   );
 
+  const gameCleanup = () => {
+    setSpotlightedItem('');
+    setGameState(undefined);
+    setSetupCounts({ numberOfQuestions: 4, numberOfCandidates: 8 }); // default
+    // Clear globalGameConfig and pass empty object to updateGameConfig
+    const clearedConfig = (Object.keys(globalGameConfig) as (keyof GameConfig)[]).reduce(
+      (acc, key) => {
+        acc[key] = undefined;
+        return acc;
+      },
+      {} as GameConfig
+    );
+    updateGameConfig(clearedConfig);
+    setIsGameOver(false);
+  };
+
   const FINAL_ROUND = gameState?.stepIdx ?? (gameState?.roundQuestions ?? []).length - 1; // this value should be the last index of the round questions (3 in my test examples)
 
   if (isGameOver)
     return (
-      <View className="flex-1 bg-background p-6">
+      <View className="p-6">
         <View className="mx-auto flex flex-col items-end gap-2">
           <AppTextInput
             value={gameState?.roundQuestions?.[FINAL_ROUND] ?? ''}
@@ -44,7 +61,14 @@ const Results = () => {
           choiceNumber={resultState?.[0]?.position ?? -1}
           val={resultState?.[0]?.question}
         />
-        <ThemedNavigateButton style="primary" text="Return Home" route="/" />
+        <ThemedNavigateButton
+          style="primary"
+          text="Return Home"
+          route="/"
+          onPress={gameCleanup}
+          withAnchor={true}
+          replace={true}
+        />
       </View>
     );
 

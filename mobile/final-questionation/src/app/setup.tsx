@@ -13,7 +13,7 @@ import { useRouter } from 'expo-router';
 const Setup = () => {
   const { playerRole, updateGameConfig, globalGameConfig, setSetupCounts, setupCounts } =
     useGameContext();
-  const { socket } = useAppContext();
+  const { socket, setWaitingForJoiner } = useAppContext();
   const router = useRouter();
   const [selectedRole, setSelectedRole] = useState<string>(playerRole.current); // just for the visual change (the useRef in the provider stores the change under the hood)
 
@@ -29,6 +29,7 @@ const Setup = () => {
       Alert.alert('Failed to create lobby', 'Please try a different name');
       throw new Error('Failed to create lobby \n' + globalGameConfig);
     }
+    setWaitingForJoiner(true);
   }
 
   return (
@@ -91,7 +92,7 @@ const Setup = () => {
         icon={() => <Feather name="play" size={24} color="white" />}
         route={{ pathname: '/[gameplay]', params: { gameplay: globalGameConfig?.lobbyName ?? '' } }}
         style="primary"
-        onClick={createLobby}
+        onPress={createLobby}
         disabled={!globalGameConfig.lobbyName || !playerRole.current}
       />
     </View>

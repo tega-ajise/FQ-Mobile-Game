@@ -8,8 +8,11 @@ interface Props {
   route: string | HrefObject;
   style: 'primary' | 'secondary' | 'howToPlay';
   icon?: () => React.ReactNode;
+  // the minimal options
+  onPress?: () => void;
   disabled?: boolean;
-  onClick?: () => void;
+  replace?: boolean;
+  withAnchor?: boolean;
 }
 
 const homeBgMapping = {
@@ -18,13 +21,11 @@ const homeBgMapping = {
   howToPlay: 'bg-instructions shadow-[0px_4.6px_0px_rgba(31,27,25,1)]',
 };
 
-const ThemedNavigateButton = ({ text, route, style, icon, onClick, disabled = false }: Props) => {
+const ThemedNavigateButton = ({ text, route, style, icon, ...opts }: Props) => {
   return (
-    <Link asChild href={route}>
+    <Link asChild href={route} {...opts}>
       <Pressable
-        className={`m-auto h-[75px] w-[315px] rounded-xl ${homeBgMapping[style]} active:shadow-none disabled:opacity-50`}
-        disabled={disabled}
-        onPress={onClick}>
+        className={`m-auto h-[75px] w-[315px] rounded-xl ${homeBgMapping[style]} active:shadow-none disabled:opacity-50`}>
         <View className="flex-1 flex-col justify-center">
           <View className="flex-row justify-center gap-2">
             {icon?.()}

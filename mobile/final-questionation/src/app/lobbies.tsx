@@ -56,20 +56,21 @@ const Lobbies = () => {
         </View>
       </View>
       <View className="m-2 w-full border-t border-outline" />
-      <View className="px-8 py-4">
-        <FlatList
-          data={lobbies}
-          keyExtractor={(item, index) => `${item.lobbyName} - ${index}`}
-          renderItem={({ item }) => {
-            return (
-              <View className="flex flex-row justify-between rounded-2xl border-2 border-outline p-4">
-                <View className="flex-col gap-1">
-                  <AppText className="text-2xl text-primary">{item.lobbyName}</AppText>
-                  <AppText className="text-xl text-accent">{item.newJoinerRole}</AppText>
-                  <AppText className="text-sm text-[#868584]">
-                    Rounds: {item.numberOfQuestions}, Candidates: {item.numberOfCandidates}
-                  </AppText>
-                </View>
+      <FlatList
+        data={lobbies}
+        className="mb-4 px-8 py-4" // mb-4 is so that the bottom doesn't look "cutoff"
+        keyExtractor={(item, index) => `${item.lobbyName} - ${index}`}
+        renderItem={({ item }) => {
+          return (
+            <View className="flex flex-row justify-between rounded-2xl border-2 border-outline p-4">
+              <View className="flex-initial flex-col gap-1">
+                <AppText className="text-2xl text-primary">{item.lobbyName}</AppText>
+                <AppText className="text-xl text-accent">{item.newJoinerRole}</AppText>
+                <AppText className="text-sm text-[#868584]">
+                  Rounds: {item.numberOfQuestions}, Candidates: {item.numberOfCandidates}
+                </AppText>
+              </View>
+              <View className="self-center">
                 <Link
                   href={{
                     pathname: '/[gameplay]',
@@ -88,14 +89,14 @@ const Lobbies = () => {
                   </Pressable>
                 </Link>
               </View>
-            );
-          }}
-          ItemSeparatorComponent={() => <View className="mt-4" />}
-          ListEmptyComponent={
-            <AppText className="m-auto text-primary">Create New Lobby Now!</AppText>
-          }
-        />
-      </View>
+            </View>
+          );
+        }}
+        ItemSeparatorComponent={() => <View className="mt-4" />}
+        ListEmptyComponent={
+          <AppText className="m-auto text-primary">Create New Lobby Now!</AppText>
+        }
+      />
     </View>
   );
 };

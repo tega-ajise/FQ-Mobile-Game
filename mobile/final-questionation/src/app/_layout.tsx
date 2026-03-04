@@ -50,7 +50,7 @@ export default function RootLayout() {
                 title: Array.isArray(params) ? params[0].gameplay : params.gameplay,
               }}
             />
-            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="index" options={{ headerShown: false, gestureEnabled: false }} />
           </Stack>
         </SafeScreen>
       </GameProvider>
