@@ -110,13 +110,8 @@ const RoundOne = () => {
                 prefixIcon={() => <FontAwesome5 name="question" size={24} color="white" />}
                 classes="w-[310px] h-[81px]"
               />
+
               <AppText className="text-2xl text-secondary">{`Round ${globalGameConfig.roundQuestions?.length ?? 0}/${setupCounts.numberOfQuestions}`}</AppText>
-              <Pressable onPress={handlePhoneAFriend} className="mx-auto bg-accent">
-                <AppText className="text-primary">
-                  <Foundation name="lightbulb" size={24} color="white" />
-                  Help me I can&apos;t think
-                </AppText>
-              </Pressable>
               <View className="absolute -right-[55px] top-[17%]">
                 <Pressable
                   className={`h-[40px] w-[40px] rounded-full ${bgMapping.primary} active:shadow-none`}
@@ -133,6 +128,14 @@ const RoundOne = () => {
             </View>
           )}
           <View className="my-4 w-full border-t border-primary" />
+          <Pressable
+            onPress={handlePhoneAFriend}
+            className="shadow-[0px_4.6px_0px_rgba(255, 204, 0, 1)] mx-auto rounded-lg bg-accent p-2">
+            <AppText className="text-primary">
+              <Foundation name="lightbulb" size={24} color="white" />
+              Help I can&apos;t think for myself
+            </AppText>
+          </Pressable>
           <FlatList
             data={globalGameConfig.roundQuestions ?? []}
             keyExtractor={(_, index) => `round-$${index}`}

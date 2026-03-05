@@ -6,15 +6,10 @@ export const phoneAFriend = async (
   onDone: (fullText: string) => void,
   onError: (err: Error) => void
 ) => {
-  let promptPayload = `Give me an interesting open-ended question.
-    It should not feel like trivia, and it should not have enumeration.
-    The only response you should give is the question, and do not say anything else as part of your response.`;
-  promptPayload =
+  const questionHelpPrompt =
     questionCtx && questionCtx.length > 0
-      ? promptPayload +
-        '\nThe question also must follow the theme of the following question(s):' +
-        questionCtx.join('\n')
-      : promptPayload;
+      ? questionCtx.at(-1)
+      : 'Give me a random, peculiar question. Do not repeat anything said before';
   try {
     const xhr = new XMLHttpRequest();
     let fullContent = '';
@@ -40,7 +35,7 @@ export const phoneAFriend = async (
             onChunk(chunk); // sends it back to the handler to autofill text
           }
         } catch {
-          // Incomplete JSON line, will be completed in next progress event
+          // Incomplete JSON line, will be completed in next progress event (JSON parse fails)
         }
       }
     };
@@ -57,8 +52,8 @@ export const phoneAFriend = async (
     // prevents race condition of receiving response before event handlers registered
     xhr.send(
       JSON.stringify({
-        model: 'smollm2:135m',
-        messages: [{ role: 'user', content: promptPayload }],
+        model: 'thinker',
+        messages: [{ role: 'user', content: questionHelpPrompt }],
       })
     ); // then send the body
     return () => xhr.abort();

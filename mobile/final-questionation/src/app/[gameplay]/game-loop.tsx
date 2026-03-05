@@ -45,7 +45,7 @@ const RoundDeetsGoHere = () => {
   }
 
   return (
-    <View className="p-6">
+    <View className="flex-1 p-6">
       <Modal
         animationType="slide"
         transparent={true}
@@ -82,6 +82,7 @@ const RoundDeetsGoHere = () => {
       <View className="my-8 w-full border border-t-primary" />
       <FlatList
         data={candidatesData}
+        className="flex-1"
         keyExtractor={(_, idx) => `Order-Number-${idx}`}
         renderItem={({ item, index }) => (
           <NavigatorGameItem

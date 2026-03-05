@@ -97,7 +97,8 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    setResultState(() => {
+    setResultState((prev) => {
+      if (prev) return prev; // prevents resultState from updating more than once (should only update at the beginning)
       if ((gameState as GameLoopState)?.candidates?.[0]?.content) {
         return (gameState as GameLoopState)?.candidates?.map((val, idx) => ({
           position: idx,
