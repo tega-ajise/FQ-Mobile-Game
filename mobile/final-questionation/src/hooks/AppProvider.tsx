@@ -14,6 +14,7 @@ interface AppContextType {
   resultState: { position: number; question: string }[] | undefined;
   isGameOver: boolean;
   setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
+  setLobbies: React.Dispatch<React.SetStateAction<LobbyDetails[]>>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -57,6 +58,16 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
     socket.on('nextStep', (gs: TGameState) => {
       setGameState(gs);
+      // this ensures both players can see the final ranking hidden
+      // the last "nextStep" event is when the game loop starts and final candidate rankings are LOCKED
+      setResultState(
+        (gs as GameConfig)?.candidates?.map((val, idx) => {
+          return {
+            position: idx,
+            question: val,
+          };
+        })
+      );
     });
 
     socket.on('eliminateItem', (value: string) => {
@@ -96,19 +107,6 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
-  useEffect(() => {
-    setResultState((prev) => {
-      if (prev) return prev; // prevents resultState from updating more than once (should only update at the beginning)
-      if ((gameState as GameLoopState)?.candidates?.[0]?.content) {
-        return (gameState as GameLoopState)?.candidates?.map((val, idx) => ({
-          position: idx,
-          question: val.content,
-        }));
-      }
-      return undefined;
-    });
-  }, [gameState]);
-
   return (
     <AppContext.Provider
       value={{
@@ -121,6 +119,7 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
         resultState,
         isGameOver,
         setIsGameOver,
+        setLobbies,
       }}>
       {children}
     </AppContext.Provider>

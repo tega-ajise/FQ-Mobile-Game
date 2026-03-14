@@ -12,7 +12,7 @@ import { bgMapping } from '@/consts/theme';
 import ThemedNavigateButton from '@/components/ThemedNavigateButton';
 
 const Results = () => {
-  const { gameState, socket, resultState, isGameOver, setGameState, setIsGameOver } =
+  const { gameState, socket, resultState, isGameOver, setGameState, setIsGameOver, setLobbies } =
     useAppContext();
   const { playerRole, setSetupCounts, updateGameConfig, globalGameConfig } = useGameContext();
 
@@ -40,6 +40,11 @@ const Results = () => {
     );
     updateGameConfig(clearedConfig);
     setIsGameOver(false);
+    setLobbies((prev) => {
+      const lobbyIdx = prev.findIndex((lbs) => lbs.lobbyName === globalGameConfig.lobbyName);
+      if (lobbyIdx < 0) return prev;
+      return prev.toSpliced(lobbyIdx, 1);
+    });
   };
 
   const FINAL_ROUND = gameState?.stepIdx ?? (gameState?.roundQuestions ?? []).length - 1; // this value should be the last index of the round questions (3 in my test examples)

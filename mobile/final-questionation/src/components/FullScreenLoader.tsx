@@ -1,5 +1,5 @@
-import React from 'react';
-import { Modal, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import ElasticBarLoader from './ElasticLoader';
 
 type Props = {
@@ -15,23 +15,34 @@ export default function FullScreenElasticLoader({
   backgroundColor = 'rgba(0,0,0,0.55)',
   barColor = '#FFFFFF',
 }: Props) {
+  const opacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(opacity, {
+      toValue: visible ? 1 : 0,
+      duration: 250,
+      useNativeDriver: true,
+    }).start();
+  }, [visible, opacity]);
+
+  if (!visible) return null;
+
   return (
-    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
-      <View style={[styles.backdrop, { backgroundColor }]} pointerEvents="auto">
-        <View style={styles.content}>
-          <ElasticBarLoader width={100} height={15} color={barColor} />
-          {!!message && <Text style={styles.message}>{message}</Text>}
-        </View>
+    <Animated.View style={[styles.backdrop, { backgroundColor, opacity }]} pointerEvents="auto">
+      <View style={styles.content}>
+        <ElasticBarLoader width={100} height={15} color={barColor} />
+        {!!message && <Text style={styles.message}>{message}</Text>}
       </View>
-    </Modal>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
   backdrop: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
+    zIndex: 999,
   },
   content: {
     alignItems: 'center',
